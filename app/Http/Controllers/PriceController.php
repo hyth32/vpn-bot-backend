@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\DTOs\PaginationDTO;
+use App\Http\Requests\PriceListRequest;
 use App\Http\Services\PriceService;
-use Illuminate\Http\Request;
 
 class PriceController extends Controller
 {
@@ -11,8 +12,10 @@ class PriceController extends Controller
         private readonly PriceService $priceService,
     ) {}
 
-    public function index(Request $request)
+    public function index(PriceListRequest $request)
     {
-        return $this->priceService->listPrices($request->offset, $request->limit, $request->region_id);
+        $data = $request->validated();
+        $pagination = PaginationDTO::fromRequest($data);
+        return $this->priceService->listPrices($pagination, $data['region_id']);
     }
 }

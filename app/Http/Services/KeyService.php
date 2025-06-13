@@ -2,6 +2,9 @@
 
 namespace App\Http\Services;
 
+use App\Http\DTOs\KeyOrderDTO;
+use App\Http\DTOs\PaginationDTO;
+
 class KeyService
 {
     /**
@@ -43,7 +46,7 @@ class KeyService
      *     )
      * )
      */
-    public function listKeys(int $offset, int $limit)
+    public function listKeys(PaginationDTO $pagination)
     {
         //
     }
@@ -107,7 +110,7 @@ class KeyService
      *     )
      * )
      */
-    public function buyKey()
+    public function buyKey(KeyOrderDTO $dto)
     {
         //
     }

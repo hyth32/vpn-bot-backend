@@ -2,6 +2,8 @@
 
 namespace App\Http\Services;
 
+use App\Http\DTOs\PaginationDTO;
+
 class RegionService
 {
     /**
@@ -42,7 +44,7 @@ class RegionService
      *     )
      * )
      */
-    public function listRegions(int $offset, int $limit)
+    public function listRegions(PaginationDTO $pagination)
     {
         //
     }

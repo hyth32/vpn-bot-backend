@@ -2,6 +2,8 @@
 
 namespace App\Http\Services;
 
+use App\Http\DTOs\PaginationDTO;
+
 class PriceService
 {
     /**
@@ -50,7 +52,7 @@ class PriceService
      *     )
      * )
      */
-    public function listPrices(int $offset, int $limit, int $regionId)
+    public function listPrices(PaginationDTO $pagination, int $regionId)
     {
         //
     }

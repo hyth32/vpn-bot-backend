@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\DTOs\KeyOrderDTO;
+use App\Http\DTOs\PaginationDTO;
+use App\Http\Requests\KeyOrderRequest;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Services\KeyService;
 use Illuminate\Http\Request;
 
@@ -11,9 +15,10 @@ class KeyController extends Controller
         private readonly KeyService $keyService,
     ) {}
 
-    public function index(Request $request)
+    public function index(PaginationRequest $request)
     {
-        return $this->keyService->listKeys($request->offset, $request->limit);
+        $pagination = PaginationDTO::fromRequest($request->validated());
+        return $this->keyService->listKeys($pagination);
     }
 
     public function show(Request $request)
@@ -21,8 +26,9 @@ class KeyController extends Controller
         return $this->keyService->getKey($request->key_id);
     }
 
-    public function buy(Request $request)
+    public function buy(KeyOrderRequest $request)
     {
-        return $this->keyService->buyKey();
+        $dto = KeyOrderDTO::fromRequest($request->validated());
+        return $this->keyService->buyKey($dto);
     }
 }

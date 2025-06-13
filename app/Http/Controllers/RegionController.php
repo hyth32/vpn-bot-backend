@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\DTOs\PaginationDTO;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Services\RegionService;
-use Illuminate\Http\Request;
 
 class RegionController extends Controller
 {
@@ -11,8 +12,9 @@ class RegionController extends Controller
         private readonly RegionService $regionService,
     ) {}
 
-    public function index(Request $request)
+    public function index(PaginationRequest $request)
     {
-        return $this->regionService->listRegions($request->offset, $request->limit);
+        $pagination = PaginationDTO::fromRequest($request->validated());
+        return $this->regionService->listRegions($pagination);
     }
 }
