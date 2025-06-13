@@ -4,9 +4,15 @@ namespace App\Http\Services;
 
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\DTOs\PaginationDTO;
+use App\Http\DTOs\PaymentDTO;
+use App\Http\Integrations\YooKassaService;
 
 class KeyService
 {
+    public function __construct(
+        private readonly YooKassaService $yooKassaService,
+    ) {}
+
     /**
      * @OA\Get(
      *     path="/api/v1/keys",
@@ -112,6 +118,11 @@ class KeyService
      */
     public function buyKey(KeyOrderDTO $dto)
     {
-        //
+        $paymentObject = PaymentDTO::create(
+            amount: 10,
+            description: 'test',
+        )->toArray();
+        
+        return $this->yooKassaService->createPayment($paymentObject);
     }
 }

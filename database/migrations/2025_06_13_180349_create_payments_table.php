@@ -14,7 +14,6 @@ return new class extends Migration
             $table->float('amount');
             $table->string('currency');
             $table->boolean('test')->default(false);
-            $table->json('meta');
 
             $table->timestamps();
         });

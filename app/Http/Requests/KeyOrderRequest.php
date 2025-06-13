@@ -9,8 +9,10 @@ class KeyOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'region_id' => 'integer|exists:regions,id',
-            'period_id' => 'integer|exists:periods,id',
+            // 'region_id' => 'required|integer|exists:regions,id',
+            // 'period_id' => 'required|integer|exists:periods,id',
+            'region_id' => 'required|integer',
+            'period_id' => 'required|integer',
         ];
     }
 }

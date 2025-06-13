@@ -15,11 +15,11 @@ class KeyOrderDTO
         $this->periodId = $periodId;
     }
 
-    public static function fromRequest(Request $request)
+    public static function fromRequest(array $data)
     {
         return new self(
-            regionId: $request->region_id,
-            periodId: $request->period_id,
+            regionId: $data['region_id'],
+            periodId: $data['period_id'],
         );
     }
 }
