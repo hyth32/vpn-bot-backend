@@ -3,6 +3,7 @@
 namespace App\Http\Integrations;
 
 use App\Models\Payment;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -12,6 +13,7 @@ class YooKassaService
     private int $shopId;
     private string $secretKey;
     private string $baseUrl;
+    private string $idempotenceKey;
 
     public function __construct()
     {
@@ -27,13 +29,7 @@ class YooKassaService
 
     public function createPayment(array $paymentObject)
     {
-        $idempotenceKey = Str::uuid()->toString();
-
-        $request = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Idempotence-Key' => $idempotenceKey,
-        ])
-        ->withBasicAuth($this->shopId, $this->secretKey);
+        $request = $this->createRequestWithIdempotence();
 
         $response = $request->post($this->baseUrl, $paymentObject);
 
@@ -41,60 +37,39 @@ class YooKassaService
 
         $data = $response->json();
 
-        $payment = Payment::create([
-            'externalId' => $data['id'],
-            'status' => $data['status'],
-            'amount' => $data['amount']['value'],
-            'currency' => $data['amount']['currency'],
-            'test' => $data['test'],
-        ]);
+        $payment = Payment::createYooKassaPayment($data);
 
+        
         // $this->checkPayment($payment->external_id);
 
-        \Log::info(['url' => $data['confirmation']['confirmation_url']]);
-
-        return json_encode(['url' => $data['confirmation']['confirmation_url']]);
+        return json_encode(['url' => $this->getPaymentUrl($data)]);
     }
 
-    public function checkPayment(string $paymentId)
+    public function createRequest(): PendingRequest
     {
-        //TODO: добавить повторную проверку изменения статуса
-        // с pending на waiting_for_capture
-
-        $request = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])
         ->withBasicAuth($this->shopId, $this->secretKey);
-
-        $response = $request->get("$this->baseUrl/$paymentId");
-
-        $this->checkAndLogResponseStatus($response);
-
-        //TODO: если статус waiting_for_capture - вызывать
-        $this->acceptPayment($paymentId);
     }
 
-    public function acceptPayment(string $paymentId)
+    public function createRequestWithIdempotence(): PendingRequest
     {
-        $idempotenceKey = Str::uuid()->toString();
+        return $this->createRequest()
+            ->withHeaders([
+                'Idempotence-Key' => $this->generateIdempotenceKey(),
+            ]);
+    }
 
-        $request = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Idempotence-Key' => $idempotenceKey,
-        ])
-        ->withBasicAuth($this->shopId, $this->secretKey);
+    public function generateIdempotenceKey()
+    {
+        $this->idempotenceKey = Str::uuid()->toString();
+        return $this->idempotenceKey;
+    }
 
-        $payment = Payment::where('externalId', $paymentId)->first();
-
-        $mockPaymentObject = [
-            'amount' => [
-                'value' => $payment->amount,
-                'currency' => $payment->currency,
-            ]
-        ];
-        $response = $request->post("$this->baseUrl/$paymentId/capture", $mockPaymentObject);
-
-        $this->checkAndLogResponseStatus($response);
+    public function getPaymentUrl(array $data)
+    {
+        return $data['confirmation']['confirmation_url'];
     }
 
     public function checkAndLogResponseStatus($response)
@@ -114,12 +89,17 @@ class YooKassaService
         ]);
     }
 
-    public function logAndThrowError($response)
+    public function logError($response)
     {
-        Log::error('YooKassa error', [
+        Log::error('YooKassa error response', [
             'status' => $response->status(),
             'body' => $response->json(),
         ]);
+    }
+
+    public function logAndThrowError($response)
+    {
+        $this->logError($response);
         throw new \RuntimeException('Failed to create payment: ' . $response->body());
     }
 }
