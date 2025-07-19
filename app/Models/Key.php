@@ -10,6 +10,7 @@ class Key extends Model
     protected $fillable = [
         'user_id',
         'region_id',
+        'period_id',
         'key',
         'expiration_date',
     ];
@@ -26,5 +27,10 @@ class Key extends Model
     public function region(): BelongsTo
     {
         return $this->belongsTo(Region::class);
+    }
+
+    public function period(): BelongsTo
+    {
+        return $this->belongsTo(Period::class);
     }
 }

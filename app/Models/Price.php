@@ -22,4 +22,14 @@ class Price extends Model
     {
         return $this->belongsTo(Period::class);
     }
+
+    public static function getAmount(int $regionId, int $periodId): float
+    {
+        $priceRecord = Price::query()
+            ->where('region_id', $regionId)
+            ->where('period_id', $periodId)
+            ->firstOrFail();
+
+        return $priceRecord->amount;
+    }
 }

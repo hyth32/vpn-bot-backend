@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('telegram_id');
             $table->timestamp('last_active_at')->nullable();
 
-            $table->rememberToken();
             $table->timestamps();
         });
 

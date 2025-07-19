@@ -18,6 +18,10 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
+            $table->foreignId('period_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->string('key');
             $table->timestamp('expiration_date');
 

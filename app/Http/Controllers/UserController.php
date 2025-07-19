@@ -35,6 +35,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['error' => 'User creation failed'], 500);
         }
-        return response()->json('User created successfully', 201);
+        
+        return response()->json(['message' => 'User created successfully'], 201);
     }
 }
