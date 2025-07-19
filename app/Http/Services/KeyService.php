@@ -26,10 +26,11 @@ class KeyService
 
     public function buyKey(KeyOrderDTO $dto)
     {
-        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
-        $config = $this->wireGuardService->createPeer($dto, $amount);
-
         $user = User::where('telegram_id', $dto->getUserId())->firstOrFail();
+        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
+
+        $config = $this->wireGuardService->createPeer($user, $amount);
+
         $user->keys()->create([
             'region_id' => $dto->getRegionId(),
             'period_id' => $dto->getPeriodId(),
@@ -39,4 +40,6 @@ class KeyService
 
         return $config;
     }
+
+    
 }

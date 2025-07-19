@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\WireGuardRepository;
 use App\Models\User;
 
@@ -12,17 +11,15 @@ class WireGuardService
         private readonly WireGuardRepository $repository,
     ) {}
 
-    public function createPeer(KeyOrderDTO $keyDto, int $expirationDays)
+    public function createPeer(User $user, int $expirationDays)
     {
-        $configName = $this->getConfigName($keyDto->getUserId());
-        $config = $this->repository->createConfig($configName, $expirationDays);
+        $configName = $this->getConfigName($user);
 
-        return $config;
+        return $this->repository->createConfig($configName, $expirationDays);
     }
-
-    public function getConfigName(int $userId)
+    
+    public function getConfigName(User $user)
     {
-        $user = User::where('telegram_id', $userId)->firstOrFail();
         $keysCount = $user->keys()->count() + 1;
         return "{$user->name}-{$keysCount}";
     }

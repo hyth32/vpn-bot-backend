@@ -2,9 +2,6 @@
 
 namespace App\Http\Repositories;
 
-use App\Http\DTOs\KeyOrderDTO;
-use App\Models\Key;
-use App\Models\User;
 use ErrorException;
 use Illuminate\Support\Facades\Http;
 
@@ -39,9 +36,7 @@ class WireGuardRepository
     {
         $rawConfig = $this->prepareConfig($configName, $expirationDays);
 
-        $syncedConfig = $this->syncConfig($rawConfig);
-
-        return $syncedConfig;
+        return $this->syncConfig($rawConfig);
     }
 
     private function prepareConfig(string $configName, int $expirationDays)
