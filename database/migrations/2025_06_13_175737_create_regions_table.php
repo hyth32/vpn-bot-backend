@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('regions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code')->unique();
             $table->string('flag')->nullable();
             $table->string('host')->nullable();
             $table->integer('port')->nullable();

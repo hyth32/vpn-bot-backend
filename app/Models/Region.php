@@ -9,6 +9,7 @@ class Region extends Model
 {
     protected $fillable = [
         'name',
+        'code',
         'flag',
         'host',
         'port',

@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'telegramId',
+        'telegram_id',
         'last_active_at',
     ];
 

@@ -2,8 +2,6 @@
 
 namespace App\Http\DTOs;
 
-use Illuminate\Http\Request;
-
 class KeyOrderDTO
 {
     public int $regionId;

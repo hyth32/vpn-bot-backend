@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('period_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->integer('amount');
+            $table->float('amount');
 
             $table->timestamps();
         });

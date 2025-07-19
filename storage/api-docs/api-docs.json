@@ -19,7 +19,7 @@
                     "Keys"
                 ],
                 "summary": "Список ключей пользователя",
-                "operationId": "6b6cbc90fe4b0adbb839596757269172",
+                "operationId": "638c2f182a74fb56fbc2ecb1759ca9bc",
                 "parameters": [
                     {
                         "name": "offset",
@@ -39,6 +39,15 @@
                         "schema": {
                             "type": "integer",
                             "default": 10
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Telegram ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -88,7 +97,18 @@
                     "Keys"
                 ],
                 "summary": "Детали ключа",
-                "operationId": "46c2069a9f584987f15d48f5e1284cea",
+                "operationId": "d6dce6558475bca4e975f4fd9f9f0b32",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Telegram ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -134,33 +154,19 @@
                 }
             }
         },
-        "/api/v1/checkout": {
+        "/api/v1/keys/checkout": {
             "post": {
                 "tags": [
                     "Keys"
                 ],
                 "summary": "Создание заказа на покупку ключа",
-                "operationId": "46031ae5eeb4a33c1683fc54f837c20d",
+                "operationId": "6e26d2d1bce5fc3d40cfbef38951bef5",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "region_id",
-                                    "period_id"
-                                ],
-                                "properties": {
-                                    "region_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "period_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/KeyOrderRequest"
                             }
                         }
                     }
@@ -181,6 +187,30 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Создание пользователя",
+                "operationId": "ba548b97148bb5c0d8cab3bc3f128bfd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully"
                     }
                 }
             }
@@ -330,6 +360,47 @@
         }
     },
     "components": {
+        "schemas": {
+            "StoreUserDto": {
+                "required": [
+                    "name",
+                    "telegram_id"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "telegram_id": {
+                        "type": "string",
+                        "example": "123456789"
+                    }
+                },
+                "type": "object"
+            },
+            "KeyOrderRequest": {
+                "required": [
+                    "user_id",
+                    "region_id",
+                    "period_id"
+                ],
+                "properties": {
+                    "user_id": {
+                        "description": "Telegram ID пользователя",
+                        "type": "integer"
+                    },
+                    "region_id": {
+                        "description": "ID региона",
+                        "type": "integer"
+                    },
+                    "period_id": {
+                        "description": "ID периода",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -341,6 +412,10 @@
         {
             "name": "Keys",
             "description": "Keys"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
         },
         {
             "name": "Prices",
