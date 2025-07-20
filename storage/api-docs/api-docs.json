@@ -124,10 +124,6 @@
                                                         "type": "integer",
                                                         "example": 1
                                                     },
-                                                    "key": {
-                                                        "type": "string",
-                                                        "example": "qwe-123-ewq"
-                                                    },
                                                     "region_name": {
                                                         "type": "string",
                                                         "example": "US"
@@ -142,6 +138,35 @@
                                                         "example": "2024-03-20T15:30:00Z"
                                                     }
                                                 },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/keys/{keyId}/config": {
+            "get": {
+                "tags": [
+                    "Keys"
+                ],
+                "summary": "Получение конфига ключа",
+                "operationId": "bb4d22071034ad39bb0b89e0150452da",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
                                                 "type": "object"
                                             }
                                         }
@@ -396,6 +421,13 @@
                     "period_id": {
                         "description": "ID периода",
                         "type": "integer"
+                    },
+                    "quantity": {
+                        "description": "Количество ключей (от 1 до 5)",
+                        "type": "integer",
+                        "maximum": 5,
+                        "minimum": 1,
+                        "example": 1
                     }
                 },
                 "type": "object"

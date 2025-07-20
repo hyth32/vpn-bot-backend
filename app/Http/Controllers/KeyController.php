@@ -113,6 +113,28 @@ class KeyController extends Controller
         return KeyResource::make($key);
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/keys/{keyId}/config",
+     *     tags={"Keys"},
+     *     summary="Получение конфига ключа",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                 )
+     *             ),
+     *         )
+     *     )
+     * )
+     */
     public function config(int $keyId, Request $request)
     {
         return $this->keyService->getConfig($keyId);
