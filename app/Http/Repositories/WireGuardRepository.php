@@ -39,6 +39,20 @@ class WireGuardRepository
         return $this->syncConfig($rawConfig);
     }
 
+    public function findConfig(string $configId)
+    {
+        $getPeerUrl = "$this->baseUrl/peer/by-id/$configId";
+        $responseConfig = Http::withBasicAuth($this->username, $this->password)
+            ->get($getPeerUrl);
+
+        $decodedConfig = json_decode($responseConfig, true);
+        if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
+            throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
+        }
+
+        return $responseConfig;
+    }
+
     private function prepareConfig(string $configName, int $expirationDays)
     {
         $config = json_decode($this->getBaseConfig(), true);

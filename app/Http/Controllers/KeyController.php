@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Requests\KeyListRequest;
 use App\Http\Requests\KeyOrderRequest;
+use App\Http\Resources\KeyResource;
+use App\Http\Resources\KeyShortResource;
 use App\Http\Services\KeyService;
+use App\Models\Key;
 use Illuminate\Http\Request;
 
 class KeyController extends Controller
@@ -62,8 +65,9 @@ class KeyController extends Controller
      */
     public function index(KeyListRequest $request)
     {
-        $pagination = $request->validated();
-        return $this->keyService->listKeys($pagination);
+        $data = $request->validated();
+        $keys = $this->keyService->listKeys($data);
+        return KeyShortResource::collection($keys);
     }
 
     /**
@@ -89,7 +93,6 @@ class KeyController extends Controller
      *                 @OA\Items(
      *                     type="object",
      *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="key", type="string", example="qwe-123-ewq"),
      *                     @OA\Property(property="region_name", type="string", example="US"),
      *                     @OA\Property(property="region_flag", type="string", example="🇺🇸"),
      *                     @OA\Property(
@@ -104,9 +107,15 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function show(Request $request)
+    public function show(int $keyId, Request $request)
     {
-        return $this->keyService->getKey($request->key_id);
+        $key = $this->keyService->showKey($keyId);
+        return KeyResource::make($key);
+    }
+
+    public function config(int $keyId, Request $request)
+    {
+        return $this->keyService->getConfig($keyId);
     }
 
     /**

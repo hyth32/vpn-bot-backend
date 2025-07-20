@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
         Route::controller(KeyController::class)->prefix('keys')->group(function () {
             Route::get('/', 'index');
             Route::get('{keyId}', 'show');
+            Route::get('{keyId}/config', 'config');
             Route::post('checkout', 'buy');
         });
     });

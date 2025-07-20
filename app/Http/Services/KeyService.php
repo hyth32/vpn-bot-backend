@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Integrations\YooKassaService;
+use App\Http\Repositories\KeyRepository;
+use App\Models\Key;
 use App\Models\Price;
 use App\Models\User;
 use Illuminate\Http\Client\Response;
@@ -14,16 +16,26 @@ class KeyService
     public function __construct(
         private readonly YooKassaService $yooKassaService,
         private readonly WireGuardService $wireGuardService,
+        private readonly KeyRepository $repository,
     ) {}
 
-    public function listKeys(array $pagination)
+    public function listKeys(array $data)
     {
-        //
+        $user = User::where('telegram_id', $data['user_id'])->first();
+        return $this->repository->index($user->id, $data['offset'], $data['limit']);
     }
 
-    public function getKey(int $keyId)
+    public function showKey(int $id)
     {
-        //
+        return $this->repository->findOne($id);
+    }
+
+    public function getConfig(int $keyId)
+    {
+        $key = $this->repository->findOne($keyId);
+        $config = $this->wireGuardService->getPeer($key);
+        $parsedConfig = $this->parseConfig($config);
+        return $this->encryptHybrid($parsedConfig);
     }
 
     public function buyKey(KeyOrderDTO $dto)

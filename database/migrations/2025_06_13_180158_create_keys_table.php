@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('key');
             $table->timestamp('expiration_date');
 
+            $table->softDeletes();
+            
             $table->timestamps();
         });
     }
