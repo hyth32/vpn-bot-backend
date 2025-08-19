@@ -10,7 +10,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'telegram_id' => 'required|string',
+            'telegram_id' => 'required|string|unique:users,telegram_id',
         ];
     }
 }
