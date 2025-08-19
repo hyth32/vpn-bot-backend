@@ -4,14 +4,14 @@ namespace App\Http\DTOs;
 
 class KeyOrderDTO
 {
-    public string $userId;
+    public string $telegramId;
     public int $regionId;
     public int $periodId;
     public int $quantity;
 
-    public function __construct(int $userId, int $regionId, int $periodId, int $quantity)
+    public function __construct(int $telegramId, int $regionId, int $periodId, int $quantity)
     {
-        $this->userId = $userId;
+        $this->telegramId = $telegramId;
         $this->regionId = $regionId;
         $this->periodId = $periodId;
         $this->quantity = $quantity;
@@ -20,7 +20,7 @@ class KeyOrderDTO
     public static function fromRequest(array $data)
     {
         return new self(
-            userId: $data['user_id'],
+            telegramId: $data['telegram_id'],
             regionId: $data['region_id'],
             periodId: $data['period_id'],
             quantity: $data['quantity'],
@@ -30,7 +30,7 @@ class KeyOrderDTO
     public function toArray()
     {
         return [
-            'user_id' => $this->userId,
+            'telegram_id' => $this->telegramId,
             'region_id' => $this->regionId,
             'period_id' => $this->periodId,
         ];
@@ -38,7 +38,7 @@ class KeyOrderDTO
 
     public function getUserId()
     {
-        return $this->userId;
+        return $this->telegramId;
     }
 
     public function getRegionId()
