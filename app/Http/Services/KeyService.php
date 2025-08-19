@@ -35,7 +35,8 @@ class KeyService
         $key = $this->repository->findOne($keyId);
         $config = $this->wireGuardService->getPeer($key);
         $parsedConfig = $this->parseConfig($config);
-        return $this->encryptHybrid($parsedConfig);
+        // return $this->encryptHybrid($parsedConfig);
+        return $parsedConfig;
     }
 
     public function buyKey(KeyOrderDTO $dto)
@@ -53,7 +54,8 @@ class KeyService
         ]);
 
         $parsedConfig = $this->parseConfig($config);
-        return $this->encryptHybrid($parsedConfig);
+        // return $this->encryptHybrid($parsedConfig);
+        return $parsedConfig;
     }
 
     public function encryptHybrid(string $config)
