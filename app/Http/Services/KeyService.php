@@ -6,9 +6,9 @@ use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Integrations\YooKassaService;
 use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\UserRepository;
-use App\Models\Key;
+use App\Models\Period;
 use App\Models\Price;
-use App\Models\User;
+use App\Models\Region;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,9 +42,26 @@ class KeyService
 
     public function buyKey(KeyOrderDTO $dto)
     {
+        $region = Region::find($dto->regionId);
+        $period = Period::find($dto->periodId);
+
+        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
+        $paymentLink = 'https://google.com';
+
+        return [
+            'region_name' => $region->name,
+            'period_name' => $period->name,
+            'quantity' => $dto->quantity,
+            'amount' => $amount,
+            'payment_link' => $paymentLink,
+        ];
+    }
+
+    // TODO: переписать на подтверждение платежа из YooKassa
+    public function acceptPayment(KeyOrderDTO $dto)
+    {
         $user = $this->userRepository->findByTelegramId($dto->getTelegramId());
         $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
-
         $config = $this->wireGuardService->createPeer($user, $amount);
 
         $user->keys()->create([

@@ -10,7 +10,7 @@ class PriceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'key_count' => $this->key_count,
+            'quantity' => $this->key_count,
             'price' => $this->amount,
         ];
     }

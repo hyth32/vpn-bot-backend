@@ -126,6 +126,13 @@ class KeyController extends Controller
      *     path="/api/v1/keys/{keyId}/config",
      *     tags={"Keys"},
      *     summary="Получение конфига ключа",
+     *     @OA\Parameter(
+     *         name="telegram_id",
+     *         in="query",
+     *         description="Telegram ID пользователя",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -164,7 +171,13 @@ class KeyController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="url", type="string", example="https://payment.example.com/checkout/123")
+     *             @OA\Property(property="order_data", type="object",
+     *                 @OA\Property(property="region_name", type="string", description="Название региона"),
+     *                 @OA\Property(property="period_name", type="string", description="Название периода"),
+     *                 @OA\Property(property="quantity", type="integer", description="Количество ключей"),
+     *                 @OA\Property(property="amount", type="integer", description="Стоимость покупки"),
+     *                 @OA\Property(property="payment_link", type="string", description="Ссылка на оплату"),
+     *             ),
      *         ),
      *     )
      * )
@@ -172,7 +185,32 @@ class KeyController extends Controller
     public function buy(KeyOrderRequest $request)
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        return $this->keyService->buyKey($dto);
+        return ['order_data' => $this->keyService->buyKey($dto)];
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/keys/accept-payment",
+     *     tags={"Keys"},
+     *     summary="(ВРЕМЕННО) Подтверждение платежа",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/KeyOrderRequest"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="config", type="string", description="Конфиг"),
+     *         ),
+     *     )
+     * )
+     */
+    public function acceptPayment(KeyOrderRequest $request)
+    {
+        $dto = KeyOrderDTO::fromRequest($request->validated());
+        return ['config' => $this->keyService->acceptPayment($dto)];
     }
 
     private function checkAccess(string $telegramId, int $keyId): bool

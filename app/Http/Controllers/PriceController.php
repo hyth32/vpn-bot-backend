@@ -55,7 +55,7 @@ class PriceController extends Controller
      *                 type="array",
      *                 @OA\Items(
      *                     type="object",
-     *                     @OA\Property(property="key_count", type="integer", description="Количество ключей", example="1"),
+     *                     @OA\Property(property="quantity", type="integer", description="Количество ключей", example="1"),
      *                     @OA\Property(property="price", type="integer", example="100"),
      *                 )
      *             ),

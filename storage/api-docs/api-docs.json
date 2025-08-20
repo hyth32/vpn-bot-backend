@@ -22,6 +22,15 @@
                 "operationId": "638c2f182a74fb56fbc2ecb1759ca9bc",
                 "parameters": [
                     {
+                        "name": "telegram_id",
+                        "in": "query",
+                        "description": "Telegram ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "offset",
                         "in": "query",
                         "description": "Смещение для пагинации",
@@ -39,15 +48,6 @@
                         "schema": {
                             "type": "integer",
                             "default": 10
-                        }
-                    },
-                    {
-                        "name": "user_id",
-                        "in": "query",
-                        "description": "Telegram ID пользователя",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 ],
@@ -100,7 +100,7 @@
                 "operationId": "d6dce6558475bca4e975f4fd9f9f0b32",
                 "parameters": [
                     {
-                        "name": "user_id",
+                        "name": "telegram_id",
                         "in": "query",
                         "description": "Telegram ID пользователя",
                         "required": true,
@@ -157,6 +157,17 @@
                 ],
                 "summary": "Получение конфига ключа",
                 "operationId": "bb4d22071034ad39bb0b89e0150452da",
+                "parameters": [
+                    {
+                        "name": "telegram_id",
+                        "in": "query",
+                        "description": "Telegram ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -203,9 +214,67 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "url": {
-                                            "type": "string",
-                                            "example": "https://payment.example.com/checkout/123"
+                                        "order_data": {
+                                            "properties": {
+                                                "region_name": {
+                                                    "description": "Название региона",
+                                                    "type": "string"
+                                                },
+                                                "period_name": {
+                                                    "description": "Название периода",
+                                                    "type": "string"
+                                                },
+                                                "quantity": {
+                                                    "description": "Количество ключей",
+                                                    "type": "integer"
+                                                },
+                                                "amount": {
+                                                    "description": "Стоимость покупки",
+                                                    "type": "integer"
+                                                },
+                                                "payment_link": {
+                                                    "description": "Ссылка на оплату",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/keys/accept-payment": {
+            "post": {
+                "tags": [
+                    "Keys"
+                ],
+                "summary": "(ВРЕМЕННО) Подтверждение платежа",
+                "operationId": "82eda7d76e9699087fa0fbf110991f1c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/KeyOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "config": {
+                                            "description": "Конфиг",
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"
@@ -314,7 +383,7 @@
                                             "type": "array",
                                             "items": {
                                                 "properties": {
-                                                    "key_count": {
+                                                    "quantity": {
                                                         "description": "Количество ключей",
                                                         "type": "integer",
                                                         "example": "1"
