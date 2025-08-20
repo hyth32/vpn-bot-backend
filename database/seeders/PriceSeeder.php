@@ -59,8 +59,8 @@ class PriceSeeder extends Seeder
     private function roundToNice(float $number)
     {
         if ($number < 1000) {
-            return floor($number / 10) * 10;
+            return round($number / 10) * 10;
         }
-        return floor($number / 50) * 50;
+        return round($number / 50) * 50;
     }
 }

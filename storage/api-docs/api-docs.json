@@ -248,6 +248,43 @@
                 }
             }
         },
+        "/api/v1/keys/free-key": {
+            "post": {
+                "tags": [
+                    "Keys"
+                ],
+                "summary": "Получение бесплатного ключа",
+                "operationId": "b63051567c6cd7d28333af2f09de3108",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FreeKeyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "config": {
+                                            "description": "Конфиг",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/keys/accept-payment": {
             "post": {
                 "tags": [
@@ -496,6 +533,20 @@
                     "telegram_id": {
                         "type": "string",
                         "example": "123456789"
+                    }
+                },
+                "type": "object"
+            },
+            "FreeKeyRequest": {
+                "description": "Запрос на получение бесплатного ключа",
+                "properties": {
+                    "telegram_id": {
+                        "description": "Telegram ID пользователя",
+                        "type": "string"
+                    },
+                    "region_id": {
+                        "description": "ID региона",
+                        "type": "string"
                     }
                 },
                 "type": "object"

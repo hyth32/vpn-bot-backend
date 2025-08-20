@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\UserRepository;
+use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
 use App\Http\Requests\Key\ShowKeyRequest;
 use App\Http\Requests\KeyListRequest;
@@ -11,7 +12,6 @@ use App\Http\Requests\KeyOrderRequest;
 use App\Http\Resources\KeyResource;
 use App\Http\Resources\KeyShortResource;
 use App\Http\Services\KeyService;
-use App\Models\User;
 
 class KeyController extends Controller
 {
@@ -120,7 +120,6 @@ class KeyController extends Controller
         return KeyResource::make($key);
     }
 
-
     /**
      * @OA\Get(
      *     path="/api/v1/keys/{keyId}/config",
@@ -186,6 +185,44 @@ class KeyController extends Controller
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
         return ['order_data' => $this->keyService->buyKey($dto)];
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/keys/free-key",
+     *     tags={"Keys"},
+     *     summary="Получение бесплатного ключа",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/FreeKeyRequest"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="config", type="string", description="Конфиг"),
+     *         ),
+     *     )
+     * )
+     */
+    public function freeKey(FreeKeyRequest $request)
+    {
+        $data = $request->validated();
+        $telegramId = $data['telegram_id'];
+        $regionId = $data['region_id'];
+        $user = $this->userRepository->findByTelegramId($telegramId);
+
+        if ($user->isFreeKeyUsed()) {
+            abort(403, 'Бесплатный ключ уже использован');
+        }
+
+        $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
+        $config = $this->keyService->acceptPayment($dto);
+
+        $user->setFreeKeyUsed();
+
+        return ['config' => $config];
     }
 
     /**

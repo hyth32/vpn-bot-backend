@@ -19,6 +19,7 @@ Route::prefix('v1')->group(function () {
             Route::get('{keyId}/config', 'config');
             Route::post('checkout', 'buy');
             Route::post('accept-payment', 'acceptPayment');
+            Route::post('free-key', 'freeKey');
         });
     });
 
