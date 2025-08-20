@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KeyController;
+use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\UserController;
@@ -21,5 +22,6 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::get('regions', [RegionController::class, 'index']);
+    Route::get('periods', [PeriodController::class, 'index']);
     Route::get('prices', [PriceController::class, 'index']);
 });

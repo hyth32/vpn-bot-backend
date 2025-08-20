@@ -216,26 +216,35 @@
                 }
             }
         },
-        "/api/v1/users": {
-            "post": {
+        "/api/v1/periods": {
+            "get": {
                 "tags": [
-                    "Users"
+                    "Periods"
                 ],
-                "summary": "Создание пользователя",
-                "operationId": "ba548b97148bb5c0d8cab3bc3f128bfd",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StoreUserDto"
+                "summary": "Список периодов",
+                "operationId": "44d5d0bf7637b80814ccb7d738aadcf5",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 100
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Region"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "User created successfully"
                     }
                 }
             }
@@ -246,7 +255,7 @@
                     "Prices"
                 ],
                 "summary": "Список стоимости по регионам",
-                "operationId": "f2d2b95b21c4ab08cf76394f76930e71",
+                "operationId": "46ce0cd9c905b7c8881d947a33f8df37",
                 "parameters": [
                     {
                         "name": "offset",
@@ -324,7 +333,7 @@
                     "Regions"
                 ],
                 "summary": "Список поддерживаемых регионов",
-                "operationId": "36698e24c9dc137482b1e89ee14d721f",
+                "operationId": "473f6d445e6dba2b0178508c043c95ad",
                 "parameters": [
                     {
                         "name": "offset",
@@ -361,17 +370,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "US East"
-                                                    }
-                                                },
-                                                "type": "object"
+                                                "$ref": "#/components/schemas/Region"
                                             }
                                         }
                                     },
@@ -379,6 +378,30 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Создание пользователя",
+                "operationId": "ba548b97148bb5c0d8cab3bc3f128bfd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully"
                     }
                 }
             }
@@ -410,9 +433,9 @@
                     "period_id"
                 ],
                 "properties": {
-                    "user_id": {
+                    "telegram_id": {
                         "description": "Telegram ID пользователя",
-                        "type": "integer"
+                        "type": "string"
                     },
                     "region_id": {
                         "description": "ID региона",
@@ -431,6 +454,28 @@
                     }
                 },
                 "type": "object"
+            },
+            "Region": {
+                "description": "Регион",
+                "properties": {
+                    "id": {
+                        "description": "ID региона",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Название региона",
+                        "type": "string"
+                    },
+                    "code": {
+                        "description": "Код региона",
+                        "type": "string"
+                    },
+                    "flag": {
+                        "description": "Флаг региона",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -446,8 +491,8 @@
             "description": "Keys"
         },
         {
-            "name": "Users",
-            "description": "Users"
+            "name": "Periods",
+            "description": "Periods"
         },
         {
             "name": "Prices",
@@ -456,6 +501,10 @@
         {
             "name": "Regions",
             "description": "Regions"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
         }
     ]
 }
