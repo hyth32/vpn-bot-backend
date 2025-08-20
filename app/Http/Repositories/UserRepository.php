@@ -15,4 +15,9 @@ class UserRepository
             throw new \RuntimeException('Failed to create user: ' . $e->getMessage());
         }
     }
+
+    public function findByTelegramId(string $telegramId)
+    {
+        return User::where('telegram_id', $telegramId)->first();
+    }
 }

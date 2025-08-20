@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Integrations\YooKassaService;
 use App\Http\Repositories\KeyRepository;
+use App\Http\Repositories\UserRepository;
 use App\Models\Key;
 use App\Models\Price;
 use App\Models\User;
@@ -14,15 +15,15 @@ use Illuminate\Support\Facades\Storage;
 class KeyService
 {
     public function __construct(
-        private readonly YooKassaService $yooKassaService,
-        private readonly WireGuardService $wireGuardService,
-        private readonly KeyRepository $repository,
+        private YooKassaService $yooKassaService,
+        private WireGuardService $wireGuardService,
+        private KeyRepository $repository,
+        private UserRepository $userRepository,
     ) {}
 
-    public function listKeys(array $data)
+    public function listKeys(int $userId, int $offset, int $limit)
     {
-        $user = User::where('telegram_id', $data['user_id'])->first();
-        return $this->repository->index($user->id, $data['offset'], $data['limit']);
+        return $this->repository->index($userId, $offset, $limit);
     }
 
     public function showKey(int $id)
@@ -41,7 +42,7 @@ class KeyService
 
     public function buyKey(KeyOrderDTO $dto)
     {
-        $user = User::where('telegram_id', $dto->getUserId())->firstOrFail();
+        $user = $this->userRepository->findByTelegramId($dto->getTelegramId());
         $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
 
         $config = $this->wireGuardService->createPeer($user, $amount);

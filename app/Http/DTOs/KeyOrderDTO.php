@@ -36,7 +36,7 @@ class KeyOrderDTO
         ];
     }
 
-    public function getUserId()
+    public function getTelegramId()
     {
         return $this->telegramId;
     }

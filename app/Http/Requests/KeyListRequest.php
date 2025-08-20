@@ -8,7 +8,7 @@ class KeyListRequest extends PaginationRequest
     {
         return [
             ...parent::rules(),
-            'user_id' => ['required', 'string', 'exists:users,telegram_id'],
+            'telegram_id' => ['required', 'string', 'exists:users,telegram_id'],
         ];
     }
 }

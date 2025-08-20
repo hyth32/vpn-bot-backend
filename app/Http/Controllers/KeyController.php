@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\DTOs\KeyOrderDTO;
+use App\Http\Repositories\UserRepository;
+use App\Http\Requests\Key\GetConfigRequest;
+use App\Http\Requests\Key\ShowKeyRequest;
 use App\Http\Requests\KeyListRequest;
 use App\Http\Requests\KeyOrderRequest;
 use App\Http\Resources\KeyResource;
 use App\Http\Resources\KeyShortResource;
 use App\Http\Services\KeyService;
-use App\Models\Key;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class KeyController extends Controller
 {
     public function __construct(
-        private readonly KeyService $keyService,
+        private KeyService $keyService,
+        private UserRepository $userRepository,
     ) {}
 
     /**
@@ -22,6 +25,13 @@ class KeyController extends Controller
      *     path="/api/v1/keys",
      *     tags={"Keys"},
      *     summary="Список ключей пользователя",
+     *     @OA\Parameter(
+     *         name="telegram_id",
+     *         in="query",
+     *         description="Telegram ID пользователя",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="offset",
      *         in="query",
@@ -35,13 +45,6 @@ class KeyController extends Controller
      *         description="Количество записей на странице",
      *         required=true,
      *         @OA\Schema(type="integer", default=10)
-     *     ),
-     *     @OA\Parameter(
-     *         name="user_id",
-     *         in="query",
-     *         description="Telegram ID пользователя",
-     *         required=true,
-     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -66,7 +69,8 @@ class KeyController extends Controller
     public function index(KeyListRequest $request)
     {
         $data = $request->validated();
-        $keys = $this->keyService->listKeys($data);
+        $user = $this->userRepository->findByTelegramId($data['telegram_id']);
+        $keys = $this->keyService->listKeys($user->id, $data['offset'], $data['limit']);
         return KeyShortResource::collection($keys);
     }
 
@@ -76,7 +80,7 @@ class KeyController extends Controller
      *     tags={"Keys"},
      *     summary="Детали ключа",
      *     @OA\Parameter(
-     *         name="user_id",
+     *         name="telegram_id",
      *         in="query",
      *         description="Telegram ID пользователя",
      *         required=true,
@@ -107,8 +111,11 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function show(int $keyId, Request $request)
+    public function show(int $keyId, ShowKeyRequest $request)
     {
+        $telegramId = $request->validated()['telegram_id'];
+        $this->checkAccess($telegramId, $keyId);
+
         $key = $this->keyService->showKey($keyId);
         return KeyResource::make($key);
     }
@@ -135,8 +142,11 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function config(int $keyId, Request $request)
+    public function config(int $keyId, GetConfigRequest $request)
     {
+        $telegramId = $request->validated()['telegram_id'];
+        $this->checkAccess($telegramId, $keyId);
+
         return $this->keyService->getConfig($keyId);
     }
 
@@ -163,5 +173,17 @@ class KeyController extends Controller
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
         return $this->keyService->buyKey($dto);
+    }
+
+    private function checkAccess(string $telegramId, int $keyId): bool
+    {
+        $user = $this->userRepository->findByTelegramId($telegramId);
+        $access = $user->keys()->where('id', $keyId)->exists();
+
+        if (!$access) {
+            abort(403, 'Доступ запрещен');
+        }
+
+        return true;
     }
 }
