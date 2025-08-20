@@ -21,9 +21,9 @@ Route::prefix('v1')->group(function () {
             Route::post('accept-payment', 'acceptPayment');
             Route::post('free-key', 'freeKey');
         });
-    });
 
-    Route::get('regions', [RegionController::class, 'index']);
-    Route::get('periods', [PeriodController::class, 'index']);
-    Route::get('prices', [PriceController::class, 'index']);
+        Route::get('regions', [RegionController::class, 'index']);
+        Route::get('periods', [PeriodController::class, 'index']);
+        Route::get('prices', [PriceController::class, 'index']);
+    });
 });
