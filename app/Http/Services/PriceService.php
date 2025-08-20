@@ -10,8 +10,8 @@ class PriceService
         private readonly PriceRepository $repository,
     ) {}
 
-    public function listPrices(array $data)
+    public function listPrices(int $regionId, int $periodId, int $offset, int $limit)
     {
-        return $this->repository->index($data['region_id'], $data['offset'], $data['limit']);
+        return $this->repository->index($regionId, $periodId, $offset, $limit);
     }
 }

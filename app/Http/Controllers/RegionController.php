@@ -36,7 +36,6 @@ class RegionController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="total", type="integer", example=100),
      *             @OA\Property(
      *                 property="data",
      *                 type="array",

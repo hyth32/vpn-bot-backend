@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('telegram_id')->unique();
             $table->timestamp('last_active_at')->nullable();
+            $table->boolean('free_key_used')->default(false);
 
             $table->timestamps();
         });

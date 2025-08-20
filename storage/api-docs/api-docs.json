@@ -223,6 +223,17 @@
                 ],
                 "summary": "Список периодов",
                 "operationId": "44d5d0bf7637b80814ccb7d738aadcf5",
+                "parameters": [
+                    {
+                        "name": "telegram_id",
+                        "in": "query",
+                        "description": "Telegram ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -230,10 +241,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "total": {
-                                            "type": "integer",
-                                            "example": 100
-                                        },
                                         "data": {
                                             "type": "array",
                                             "items": {
@@ -258,6 +265,24 @@
                 "operationId": "46ce0cd9c905b7c8881d947a33f8df37",
                 "parameters": [
                     {
+                        "name": "region_id",
+                        "in": "query",
+                        "description": "ID региона",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "period_id",
+                        "in": "query",
+                        "description": "ID периода",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
                         "name": "offset",
                         "in": "query",
                         "description": "Смещение для пагинации",
@@ -276,15 +301,6 @@
                             "type": "integer",
                             "default": 10
                         }
-                    },
-                    {
-                        "name": "region_id",
-                        "in": "query",
-                        "description": "ID региона",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
                     }
                 ],
                 "responses": {
@@ -294,21 +310,14 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "total": {
-                                            "type": "integer",
-                                            "example": 100
-                                        },
                                         "data": {
                                             "type": "array",
                                             "items": {
                                                 "properties": {
-                                                    "period_id": {
+                                                    "key_count": {
+                                                        "description": "Количество ключей",
                                                         "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "period_name": {
-                                                        "type": "string",
-                                                        "example": "Месяц"
+                                                        "example": "1"
                                                     },
                                                     "price": {
                                                         "type": "integer",
@@ -363,10 +372,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "total": {
-                                            "type": "integer",
-                                            "example": 100
-                                        },
                                         "data": {
                                             "type": "array",
                                             "items": {

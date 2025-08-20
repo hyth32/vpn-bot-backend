@@ -6,8 +6,8 @@ use App\Models\Period;
 
 class PeriodRepository
 {
-    public function index()
+    public function index(int $offset = 0)
     {
-        return Period::orderBy('id', 'asc')->get();
+        return Period::orderBy('id', 'asc')->offset($offset)->get();
     }
 }

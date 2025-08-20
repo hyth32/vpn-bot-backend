@@ -15,6 +15,7 @@ class User extends Authenticatable
         'name',
         'telegram_id',
         'last_active_at',
+        'free_key_used',
     ];
 
     protected function casts(): array
@@ -22,6 +23,16 @@ class User extends Authenticatable
         return [
             'last_active_at' => 'datetime',
         ];
+    }
+
+    public function isFreeKeyUsed(): bool
+    {
+        return $this->free_key_used;
+    }
+
+    public function setFreeKeyUsed()
+    {
+        $this->update(['free_key_used' => true]);
     }
 
     public function keys(): HasMany

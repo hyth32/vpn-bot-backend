@@ -12,8 +12,17 @@ class PriceSeeder extends Seeder
     {
         $periods = Period::query();
 
+        Price::updateOrCreate(
+            ['region_id' => 1, 'period_id' => 1, 'key_count' => 1],
+            ['amount' => 0],
+        );
+
         $periods->cursor()->each(function (Period $period) {
             for ($i = 1; $i < 6; $i++) {
+                if ($period->id == 1) {
+                    continue;
+                }
+
                 Price::updateOrCreate(
                     ['region_id' => 1, 'period_id' => $period->id, 'key_count' => $i],
                     ['amount' => $this->calculatePrice($i, $period->value)],

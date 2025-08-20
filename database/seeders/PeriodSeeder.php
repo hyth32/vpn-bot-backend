@@ -10,7 +10,7 @@ class PeriodSeeder extends Seeder
     public function run(): void
     {
         $periods = [
-            ['name' => 'Free', 'value' => 1],
+            ['name' => 'Free', 'value' => 0],
             ['name' => 'Monthly', 'value' => 1],
             ['name' => 'Quarterly', 'value' => 3],
             ['name' => 'Semiannual', 'value' => 6],

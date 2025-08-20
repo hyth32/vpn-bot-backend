@@ -18,6 +18,20 @@ class PriceController extends Controller
      *     tags={"Prices"},
      *     summary="Список стоимости по регионам",
      *     @OA\Parameter(
+     *         name="region_id",
+     *         in="query",
+     *         description="ID региона",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="period_id",
+     *         in="query",
+     *         description="ID периода",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
      *         name="offset",
      *         in="query",
      *         description="Смещение для пагинации",
@@ -31,26 +45,17 @@ class PriceController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer", default=10)
      *     ),
-     *     @OA\Parameter(
-     *         name="region_id",
-     *         in="query",
-     *         description="ID региона",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="total", type="integer", example=100),
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
      *                 @OA\Items(
      *                     type="object",
-     *                     @OA\Property(property="period_id", type="integer", example=1),
-     *                     @OA\Property(property="period_name", type="string", example="Месяц"),
+     *                     @OA\Property(property="key_count", type="integer", description="Количество ключей", example="1"),
      *                     @OA\Property(property="price", type="integer", example="100"),
      *                 )
      *             ),
@@ -61,7 +66,12 @@ class PriceController extends Controller
     public function index(PriceListRequest $request)
     {
         $data = $request->validated();
-        $prices = $this->priceService->listPrices($data);
+        $prices = $this->priceService->listPrices(
+            $data['region_id'],
+            $data['period_id'],
+            $data['offset'],
+            $data['limit'],
+        );
         return PriceResource::collection($prices);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\PeriodRepository;
+use App\Models\User;
 
 class PeriodService
 {
@@ -10,8 +11,9 @@ class PeriodService
         private PeriodRepository $repository,
     ) {}
 
-    public function listPeriods()
+    public function listPeriods(User $user)
     {
-        return $this->repository->index();
+        $offset = (int) $user->isFreeKeyUsed();
+        return $this->repository->index($offset);
     }
 }

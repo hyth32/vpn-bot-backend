@@ -9,6 +9,7 @@ class PriceListRequest extends PaginationRequest
         return [
             ...parent::rules(),
             'region_id' => 'required|integer|exists:regions,id',
+            'period_id' => 'required|integer|exists:periods,id',
         ];
     }
 }
