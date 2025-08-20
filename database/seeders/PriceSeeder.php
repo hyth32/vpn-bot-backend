@@ -10,21 +10,48 @@ class PriceSeeder extends Seeder
 {
     public function run(): void
     {
-        $regionId = 1;
-        $periodIds = Period::query()->pluck('id')->toArray();
+        $periods = Period::query();
 
-        $prices = [
-            1 => 100,
-            2 => 300,
-            3 => 600,
-            4 => 1200,
+        $periods->cursor()->each(function (Period $period) {
+            for ($i = 1; $i < 6; $i++) {
+                Price::updateOrCreate(
+                    ['region_id' => 1, 'period_id' => $period->id, 'key_count' => $i],
+                    ['amount' => $this->calculatePrice($i, $period->value)],
+                );
+            }
+        });
+    }
+
+    private function calculatePrice(int $deviceCount, int $monthCount)
+    {
+        $basePrice = 100;
+
+        $deviceDiscount = [
+            1 => 0,
+            2 => 70,
+            3 => 110,
+            4 => 120,
+            5 => 140,
         ];
 
-        foreach ($periodIds as $periodId) {
-            Price::updateOrCreate(
-                ['region_id' => $regionId, 'period_id' => $periodId],
-                ['amount' => $prices[$periodId]],
-            );
+        $durationDiscount = [
+            1 => 0,
+            3 => 0.05,
+            6 => 0.10,
+            12 => 0.20,
+        ];
+
+        $price = ($deviceCount * $basePrice - ($deviceDiscount[$deviceCount] ?? 0))
+            * $monthCount * (1 - ($durationDiscount[$monthCount] ?? 0));
+
+        return $this->roundToNice($price);
+    }
+
+    private function roundToNice(float $number)
+    {
+        if ($number < 1000) {
+            return floor($number / 10) * 10;
         }
+        return floor($number / 50) * 50;
     }
 }

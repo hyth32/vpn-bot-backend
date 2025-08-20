@@ -40,13 +40,7 @@ class RegionController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="name", type="string", example="Netherlands"),
-     *                     @OA\Property(property="code", type="string", example="NL"),
-     *                     @OA\Property(property="flag", type="string", example="🇳🇱"),
-     *                 )
+     *                 @OA\Items(ref="#/components/schemas/Region"),
      *             ),
      *         )
      *     )
