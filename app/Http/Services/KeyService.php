@@ -45,13 +45,13 @@ class KeyService
         $region = Region::find($dto->regionId);
         $period = Period::find($dto->periodId);
 
-        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
+        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId(), $dto->getQuantity());
         $paymentLink = 'https://google.com';
 
         return [
             'region_name' => $region->name,
             'period_name' => $period->name,
-            'quantity' => $dto->quantity,
+            'quantity' => $dto->getQuantity(),
             'amount' => $amount,
             'payment_link' => $paymentLink,
         ];
@@ -61,7 +61,7 @@ class KeyService
     public function acceptPayment(KeyOrderDTO $dto)
     {
         $user = $this->userRepository->findByTelegramId($dto->getTelegramId());
-        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId());
+        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId(), $dto->getQuantity());
         $config = $this->wireGuardService->createPeer($user, $amount);
 
         $user->keys()->create([

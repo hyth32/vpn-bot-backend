@@ -94,18 +94,7 @@ class KeyController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="region_name", type="string", example="US"),
-     *                     @OA\Property(property="region_flag", type="string", example="🇺🇸"),
-     *                     @OA\Property(
-     *                         property="expiration_date",
-     *                         type="string",
-     *                         format="date-time",
-     *                         example="2024-03-20T15:30:00Z"
-     *                     ),
-     *                 )
+     *                 @OA\Items(ref="#/components/schemas/Key"),
      *             ),
      *         )
      *     )

@@ -50,4 +50,9 @@ class KeyOrderDTO
     {
         return $this->periodId;
     }
+
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
 }

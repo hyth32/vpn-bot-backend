@@ -14,6 +14,7 @@ class KeyResource extends JsonResource
             'region_name' => $this->region->name,
             'region_flag' => $this->region->flag,
             'expiration_date' => $this->expiration_date,
+            'amount' => $this->getPrice(),
         ];
     }
 }
