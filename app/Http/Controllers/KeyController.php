@@ -173,7 +173,7 @@ class KeyController extends Controller
     public function buy(KeyOrderRequest $request)
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        return ['order_data' => $this->keyService->buyKey($dto)];
+        return $this->keyService->buyKey($dto);
     }
 
     /**

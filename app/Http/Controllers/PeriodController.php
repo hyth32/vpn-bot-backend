@@ -44,6 +44,6 @@ class PeriodController
         $telegramId = $request->validated()['telegram_id'];
         $user = User::where('telegram_id', $telegramId)->first();
         $periods = $this->service->listPeriods($user);
-        return ['periods' => PeriodResource::collection($periods)];
+        return PeriodResource::collection($periods);
     }
 }

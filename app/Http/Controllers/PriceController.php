@@ -72,6 +72,7 @@ class PriceController extends Controller
             $data['offset'],
             $data['limit'],
         );
+        
         return PriceResource::collection($prices);
     }
 }
