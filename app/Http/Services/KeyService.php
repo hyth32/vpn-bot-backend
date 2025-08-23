@@ -3,12 +3,14 @@
 namespace App\Http\Services;
 
 use App\Http\DTOs\KeyOrderDTO;
+use App\Http\DTOs\KeyResponseDTO;
 use App\Http\Integrations\YooKassaService;
 use App\Http\Repositories\KeyRepository;
+use App\Http\Repositories\PeriodRepository;
+use App\Http\Repositories\PriceRepository;
+use App\Http\Repositories\RegionRepository;
 use App\Http\Repositories\UserRepository;
-use App\Models\Period;
-use App\Models\Price;
-use App\Models\Region;
+use App\Models\Key;
 use App\Support\WireGuard\WireGuardConfigParser;
 
 class KeyService
@@ -18,6 +20,9 @@ class KeyService
         private WireGuardService $wireGuardService,
         private KeyRepository $repository,
         private UserRepository $userRepository,
+        private RegionRepository $regionRepository,
+        private PeriodRepository $periodRepository,
+        private PriceRepository $priceRepository,
         private WireGuardConfigParser $parser,
     ) {}
 
@@ -26,33 +31,57 @@ class KeyService
         return $this->repository->index($userId, $offset, $limit);
     }
 
-    public function showKey(int $id)
+    public function showKey(int $id): Key
     {
         return $this->repository->findOne($id);
     }
 
-    public function getConfig(int $keyId)
+    public function getConfig(int $keyId): string
     {
         $configId = $this->repository->getConfigId($keyId);
         $config = $this->wireGuardService->getPeer($configId);
         return $this->parser->parse($config);
     }
 
-    public function buyKey(KeyOrderDTO $dto)
+    public function buyKey(KeyOrderDTO $dto): KeyResponseDTO
     {
-        $region = Region::find($dto->regionId);
-        $period = Period::find($dto->periodId);
+        $regionName = $this->regionRepository->getName($dto->getRegionId());
+        $periodName = $this->periodRepository->getName($dto->getPeriodId());
 
-        $amount = Price::getAmount($dto->getRegionId(), $dto->getPeriodId(), $dto->getQuantity());
+        $amount = $this->priceRepository->getPrice(
+            $dto->getRegionId(),
+            $dto->getPeriodId(),
+            $dto->getQuantity(),
+        );
+
         $paymentLink = 'https://google.com';
 
-        return [
-            'region_name' => $region->name,
-            'period_name' => $period->name,
-            'quantity' => $dto->getQuantity(),
-            'amount' => $amount,
-            'payment_link' => $paymentLink,
-        ];
+        return new KeyResponseDTO(
+            region_name: $regionName,
+            period_name: $periodName,
+            quantity: $dto->getQuantity(),
+            amount: $amount,
+            payment_link: $paymentLink,
+        );
+    }
+
+    public function renewKey(int $keyId): KeyResponseDTO
+    {
+        $key = $this->repository->findOne($keyId);
+        $regionName = $this->regionRepository->getName($key->region_id);
+        $periodName = $this->periodRepository->getName($key->period_id);
+
+        $amount = $this->priceRepository->getPrice($key->region_id, $key->period_id);
+        
+        $paymentLink = 'https://google.com';
+
+        return new KeyResponseDTO(
+            region_name: $regionName,
+            period_name: $periodName,
+            quantity: 1,
+            amount: $amount,
+            payment_link: $paymentLink,
+        );
     }
 
     // TODO: переписать на подтверждение платежа из YooKassa

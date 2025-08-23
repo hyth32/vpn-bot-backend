@@ -2,53 +2,38 @@
 
 namespace App\Http\DTOs;
 
-class KeyOrderDTO
+class KeyOrderDTO extends BaseDTO
 {
-    public string $telegramId;
-    public int $regionId;
-    public int $periodId;
-    public int $quantity;
-
-    public function __construct(int $telegramId, int $regionId, int $periodId, int $quantity)
-    {
-        $this->telegramId = $telegramId;
-        $this->regionId = $regionId;
-        $this->periodId = $periodId;
-        $this->quantity = $quantity;
-    }
+    public function __construct(
+        public string $telegram_id,
+        public int $region_id,
+        public int $period_id,
+        public int $quantity,
+    ) {}
 
     public static function fromRequest(array $data)
     {
         return new self(
-            telegramId: $data['telegram_id'],
-            regionId: $data['region_id'],
-            periodId: $data['period_id'],
+            telegram_id: $data['telegram_id'],
+            region_id: $data['region_id'],
+            period_id: $data['period_id'],
             quantity: $data['quantity'],
         );
     }
 
-    public function toArray()
-    {
-        return [
-            'telegram_id' => $this->telegramId,
-            'region_id' => $this->regionId,
-            'period_id' => $this->periodId,
-        ];
-    }
-
     public function getTelegramId()
     {
-        return $this->telegramId;
+        return $this->telegram_id;
     }
 
     public function getRegionId()
     {
-        return $this->regionId;
+        return $this->region_id;
     }
 
     public function getPeriodId()
     {
-        return $this->periodId;
+        return $this->period_id;
     }
 
     public function getQuantity()

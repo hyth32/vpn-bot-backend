@@ -177,30 +177,11 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "order_data": {
-                                            "properties": {
-                                                "region_name": {
-                                                    "description": "Название региона",
-                                                    "type": "string"
-                                                },
-                                                "period_name": {
-                                                    "description": "Название периода",
-                                                    "type": "string"
-                                                },
-                                                "quantity": {
-                                                    "description": "Количество ключей",
-                                                    "type": "integer"
-                                                },
-                                                "amount": {
-                                                    "description": "Стоимость покупки",
-                                                    "type": "integer"
-                                                },
-                                                "payment_link": {
-                                                    "description": "Ссылка на оплату",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/KeyResponseDto"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -238,6 +219,45 @@
                                         "config": {
                                             "description": "Конфиг",
                                             "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/keys/{keyId}/renew": {
+            "post": {
+                "tags": [
+                    "Keys"
+                ],
+                "summary": "Продление ключа",
+                "operationId": "ea4d9f1b06155c3258480339f895335e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RenewKeyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/KeyResponseDto"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -483,6 +503,32 @@
     },
     "components": {
         "schemas": {
+            "KeyResponseDto": {
+                "description": "Данные покупаемого ключа",
+                "properties": {
+                    "region_name": {
+                        "description": "Название региона",
+                        "type": "string"
+                    },
+                    "period_name": {
+                        "description": "Название периода",
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "description": "Количество ключей",
+                        "type": "integer"
+                    },
+                    "amount": {
+                        "description": "Сумма",
+                        "type": "integer"
+                    },
+                    "payment_link": {
+                        "description": "Ссылка на оплату",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "StoreUserDto": {
                 "required": [
                     "name",
@@ -510,6 +556,20 @@
                     "region_id": {
                         "description": "ID региона",
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RenewKeyRequest": {
+                "description": "Запрос на продление ключа",
+                "properties": {
+                    "telegram_id": {
+                        "description": "Telegram ID пользователя",
+                        "type": "string"
+                    },
+                    "key_id": {
+                        "description": "ID ключа",
+                        "type": "integer"
                     }
                 },
                 "type": "object"

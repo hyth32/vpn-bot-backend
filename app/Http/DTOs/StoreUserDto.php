@@ -11,31 +11,25 @@ namespace App\Http\DTOs;
  *     @OA\Property(property="telegram_id", type="string", example="123456789"),
  * )
  */
-class StoreUserDto
+class StoreUserDto extends BaseDTO
 {
-    public string $name;
-    public string $telegramId;
-
-    public function __construct(string $name, string $telegramId)
-    {
-        $this->name = $name;
-        $this->telegramId = $telegramId;
-    }
+    public function __construct(
+        public string $name,
+        public string $telegram_id,
+    ) {}
 
     public static function fromRequest(array $data): self
     {
         return new self(
             name: $data['name'],
-            telegramId: $data['telegram_id'],
+            telegram_id: $data['telegram_id'],
         );
     }
 
     public function toArray(): array
     {
-        return [
-            'name' => $this->name,
-            'telegram_id' => $this->telegramId,
-            'last_active_at' => now(),
-        ];
+        $data = parent::toArray();
+        $data['last_active_at'] = now();
+        return $data;
     }
 }

@@ -10,4 +10,9 @@ class PeriodRepository
     {
         return Period::orderBy('id', 'asc')->offset($offset)->get();
     }
+
+    public function getName(int $periodId): ?string
+    {
+        return Period::where('id', $periodId)->value('name');
+    }
 }

@@ -39,4 +39,10 @@ class KeyRepository
     {
         return Key::where('id', $keyId)->value('config_id');
     }
+
+    public function isKeyExpired(int $keyId): bool
+    {
+        $expirationDate = Key::where('id', $keyId)->value('expiration_date');
+        return $expirationDate <= now()->toDateTimeString();
+    }
 }

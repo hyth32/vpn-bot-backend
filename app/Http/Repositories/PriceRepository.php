@@ -17,7 +17,7 @@ class PriceRepository
             ->get();
     }
 
-    public function getPrice(int $regionId, int $periodId, int $keyCount): ?float
+    public function getPrice(int $regionId, int $periodId, ?int $keyCount = 1): ?float
     {
         return Price::where('region_id' , $regionId)
             ->where('period_id', $periodId)

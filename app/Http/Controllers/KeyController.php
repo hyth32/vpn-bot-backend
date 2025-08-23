@@ -7,6 +7,7 @@ use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
+use App\Http\Requests\Key\RenewKeyRequest;
 use App\Http\Requests\Key\ShowKeyRequest;
 use App\Http\Requests\KeyListRequest;
 use App\Http\Requests\KeyOrderRequest;
@@ -17,7 +18,7 @@ use App\Http\Services\KeyService;
 class KeyController extends Controller
 {
     public function __construct(
-        private KeyService $keyService,
+        private KeyService $service,
         private UserRepository $userRepository,
         private KeyRepository $repository,
     ) {}
@@ -66,7 +67,7 @@ class KeyController extends Controller
     {
         $data = $request->validated();
         $userId = $this->userRepository->getIdFromTelegramId($data['telegram_id']);
-        $keys = $this->keyService->listKeys($userId, $data['offset'], $data['limit']);
+        $keys = $this->service->listKeys($userId, $data['offset'], $data['limit']);
         return KeyShortResource::collection($keys);
     }
 
@@ -101,7 +102,7 @@ class KeyController extends Controller
         $telegramId = $request->validated()['telegram_id'];
         $this->checkAccess($telegramId, $keyId);
 
-        $key = $this->keyService->showKey($keyId);
+        $key = $this->service->showKey($keyId);
         return KeyResource::make($key);
     }
 
@@ -138,7 +139,7 @@ class KeyController extends Controller
         $telegramId = $request->validated()['telegram_id'];
         $this->checkAccess($telegramId, $keyId);
 
-        return $this->keyService->getConfig($keyId);
+        return $this->service->getConfig($keyId);
     }
 
     /**
@@ -155,21 +156,20 @@ class KeyController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="order_data", type="object",
-     *                 @OA\Property(property="region_name", type="string", description="Название региона"),
-     *                 @OA\Property(property="period_name", type="string", description="Название периода"),
-     *                 @OA\Property(property="quantity", type="integer", description="Количество ключей"),
-     *                 @OA\Property(property="amount", type="integer", description="Стоимость покупки"),
-     *                 @OA\Property(property="payment_link", type="string", description="Ссылка на оплату"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/KeyResponseDto")
      *             ),
-     *         ),
+     *         )
      *     )
      * )
      */
-    public function buy(KeyOrderRequest $request)
+    public function buy(KeyOrderRequest $request): array
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        return $this->keyService->buyKey($dto);
+        $response = $this->service->buyKey($dto);
+        return $response->toArray();
     }
 
     /**
@@ -202,11 +202,49 @@ class KeyController extends Controller
         }
 
         $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-        $config = $this->keyService->acceptPayment($telegramId, $dto);
+        $config = $this->service->acceptPayment($telegramId, $dto);
 
         $this->userRepository->markFreeKeyUsed($telegramId);
 
         return ['config' => $config];
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/keys/{keyId}/renew",
+     *     tags={"Keys"},
+     *     summary="Продление ключа",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RenewKeyRequest"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/KeyResponseDto")
+     *             ),
+     *         )
+     *     )
+     * )
+     */
+    public function renew(RenewKeyRequest $request)
+    {
+        $data = $request->validated();
+        $telegramId = $data['telegram_id'];
+        $keyId = $data['key_id'];
+        $this->checkAccess($telegramId, $keyId);
+
+        $isExpired = $this->repository->isKeyExpired($keyId);
+        if ($isExpired) {
+            abort(400, 'Срок действия ключа истек, создайте новый');
+        }
+
+        return $this->service->renewKey($keyId);
     }
 
     /**
@@ -231,7 +269,7 @@ class KeyController extends Controller
     public function acceptPayment(KeyOrderRequest $request)
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        return ['config' => $this->keyService->acceptPayment($dto)];
+        return ['config' => $this->service->acceptPayment($dto)];
     }
 
     private function checkAccess(string $telegramId, int $keyId): bool
