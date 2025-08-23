@@ -58,28 +58,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "total": {
-                                            "type": "integer",
-                                            "example": 100
-                                        },
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "region_name": {
-                                                        "type": "string",
-                                                        "example": "US"
-                                                    },
-                                                    "region_flag": {
-                                                        "type": "string",
-                                                        "example": "🇺🇸"
-                                                    }
-                                                },
-                                                "type": "object"
+                                                "$ref": "#/components/schemas/KeyShort"
                                             }
                                         }
                                     },
@@ -119,26 +101,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "region_name": {
-                                                        "type": "string",
-                                                        "example": "US"
-                                                    },
-                                                    "region_flag": {
-                                                        "type": "string",
-                                                        "example": "🇺🇸"
-                                                    },
-                                                    "expiration_date": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2024-03-20T15:30:00Z"
-                                                    }
-                                                },
-                                                "type": "object"
+                                                "$ref": "#/components/schemas/Key"
                                             }
                                         }
                                     },
@@ -576,6 +539,65 @@
                         "maximum": 5,
                         "minimum": 1,
                         "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "Key": {
+                "description": "Ключ",
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/KeyShort"
+                    },
+                    {
+                        "properties": {
+                            "expiration_date": {
+                                "description": "Дата экспирации",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "amount": {
+                                "description": "Стоимость продления",
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "KeyShort": {
+                "description": "Ключ",
+                "properties": {
+                    "id": {
+                        "description": "ID ключа",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Название ключа",
+                        "type": "string"
+                    },
+                    "region_name": {
+                        "description": "Название региона",
+                        "type": "string"
+                    },
+                    "region_flag": {
+                        "description": "Флаг региона",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Period": {
+                "description": "Период",
+                "properties": {
+                    "id": {
+                        "description": "ID периода",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "ID периода",
+                        "type": "string"
                     }
                 },
                 "type": "object"

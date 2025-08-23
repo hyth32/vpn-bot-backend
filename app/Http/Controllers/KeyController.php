@@ -53,16 +53,10 @@ class KeyController extends Controller
      *         description="Successful operation",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="total", type="integer", example=100),
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="region_name", type="string", example="US"),
-     *                     @OA\Property(property="region_flag", type="string", example="🇺🇸"),
-     *                 )
+     *                 @OA\Items(ref="#/components/schemas/KeyShort"),
      *             ),
      *         )
      *     )

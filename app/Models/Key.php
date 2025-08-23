@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @OA\Schema(schema="Key", description="Ключ", properties={
+ * @OA\Schema(schema="Key", description="Ключ", allOf={@OA\Schema(ref="#/components/schemas/KeyShort")}, properties={
+ *     @OA\Property(property="expiration_date", type="string", format="date-time", description="Дата экспирации"),
+ *     @OA\Property(property="amount", type="integer", description="Стоимость продления"),
+ * })
+ * 
+ * @OA\Schema(schema="KeyShort", description="Ключ", properties={
  *     @OA\Property(property="id", type="integer", description="ID ключа"),
  *     @OA\Property(property="name", type="string", description="Название ключа"),
  *     @OA\Property(property="region_name", type="string", description="Название региона"),
  *     @OA\Property(property="region_flag", type="string", description="Флаг региона"),
- *     @OA\Property(property="expiration_date", type="string", format="date-time", description="Дата экспирации"),
- *     @OA\Property(property="amount", type="integer", description="Стоимость продления"),
  * })
  */
 class Key extends Model
