@@ -37,6 +37,6 @@ class KeyRepository
 
     public function getConfigId(int $keyId): ?string
     {
-        return Key::where('id', $keyId)->value('key');
+        return Key::where('id', $keyId)->value('config_id');
     }
 }

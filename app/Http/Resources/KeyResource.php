@@ -11,6 +11,7 @@ class KeyResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->config_name,
             'region_name' => $this->region->name,
             'region_flag' => $this->region->flag,
             'expiration_date' => $this->expiration_date,

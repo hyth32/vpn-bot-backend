@@ -22,7 +22,8 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
-            $table->string('key');
+            $table->string('config_id');
+            $table->string('config_name');
             $table->timestamp('expiration_date');
 
             $table->softDeletes();

@@ -71,7 +71,8 @@ class KeyService
             'region_id' => $dto->getRegionId(),
             'period_id' => $dto->getPeriodId(),
             'expiration_date' => $config['ExpiresAt'],
-            'key' => $config['Identifier'],
+            'config_id' => $config['Identifier'],
+            'config_name' => $config['DisplayName'],
         ];
 
         $this->repository->create($keyData);

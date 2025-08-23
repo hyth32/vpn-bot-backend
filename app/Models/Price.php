@@ -23,7 +23,7 @@ class Price extends Model
         return $this->belongsTo(Period::class);
     }
 
-    public static function getAmount(int $regionId, int $periodId, int $quantity): ?float
+    public static function getAmount(int $regionId, int $periodId, ?int $quantity = 1): ?float
     {
         return Price::query()
             ->where('region_id', $regionId)
