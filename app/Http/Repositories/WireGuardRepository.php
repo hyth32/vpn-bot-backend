@@ -2,6 +2,7 @@
 
 namespace App\Http\Repositories;
 
+use App\Support\WireGuard\WireGuardConfigFormatter;
 use ErrorException;
 use Illuminate\Support\Facades\Http;
 
@@ -11,8 +12,9 @@ class WireGuardRepository
     private string $password;
     private string $baseUrl;
 
-    public function __construct()
-    {
+    public function __construct(
+        private WireGuardConfigFormatter $formatter,
+    ) {
         $this->init();
     }
 
@@ -23,23 +25,22 @@ class WireGuardRepository
         $this->baseUrl = config('wireguard.url');
     }
 
-    public function getBaseConfig()
+    public function getBaseConfig(): array
     {
         $prepareConfigUrl = "$this->baseUrl/peer/prepare/wg0";
-        $response = Http::withBasicAuth($this->username, $this->password)
-            ->get($prepareConfigUrl);
-        
-        return $response;
+        $baseConfigResponse = Http::withBasicAuth($this->username, $this->password)->get($prepareConfigUrl);
+        return $baseConfigResponse->json();
     }
 
-    public function createConfig(string $configName, int $expirationDays)
+    public function createConfig(string $configName, int $expirationDays): array
     {
-        $rawConfig = $this->prepareConfig($configName, $expirationDays);
+        $baseConfig = $this->getBaseConfig();
+        $rawConfig = $this->formatter->prepareConfig($baseConfig, $configName, $expirationDays);
 
         return $this->syncConfig($rawConfig);
     }
 
-    public function findConfig(string $configId)
+    public function findConfig(string $configId): array
     {
         $configId = rawurlencode($configId);
         $getPeerUrl = "$this->baseUrl/peer/by-id/$configId";
@@ -51,25 +52,15 @@ class WireGuardRepository
             throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
         }
 
-        return $responseConfig;
+        return $responseConfig->json();
     }
 
-    private function prepareConfig(string $configName, int $expirationDays)
-    {
-        $config = json_decode($this->getBaseConfig(), true);
-        $config['DisplayName'] = $configName;
-        $config['Filename'] = $configName;
-        $config['ExpiresAt'] = now()->addDays($expirationDays)->toDateString();
-
-        return json_encode($config);
-    }
-
-    public function syncConfig($config)
+    public function syncConfig(array $config): array
     {
         $syncConfigUrl = "$this->baseUrl/peer/new";
 
         $responseConfig = Http::withBasicAuth($this->username, $this->password)
-            ->withBody($config)
+            ->withBody(json_encode($config))
             ->post($syncConfigUrl);
 
         $decodedConfig = json_decode($responseConfig, true);
@@ -77,6 +68,6 @@ class WireGuardRepository
             throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
         }
 
-        return $responseConfig;
+        return $responseConfig->json();
     }
 }

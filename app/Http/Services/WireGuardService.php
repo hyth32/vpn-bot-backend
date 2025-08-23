@@ -12,14 +12,14 @@ class WireGuardService
         private KeyRepository $keyRepository,
     ) {}
 
-    public function createPeer(int $userId, string $userName, int $expirationDays)
+    public function createPeer(int $userId, string $userName, int $expirationDays): array
     {
         $keysCount = $this->keyRepository->countByUserId($userId);
         $configName = "{$userName}-{$keysCount}";
         return $this->repository->createConfig($configName, $expirationDays);
     }
     
-    public function getPeer(string $configId)
+    public function getPeer(string $configId): array
     {
         return $this->repository->findConfig($configId);
     }

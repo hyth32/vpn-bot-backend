@@ -2,11 +2,9 @@
 
 namespace App\Support\WireGuard;
 
-use Illuminate\Http\Client\Response;
-
 class WireGuardConfigParser
 {
-    public function parse(Response $config): string
+    public function parse(array $config): string
     {
         $resultConfig = collect();
         $resultConfig->push($this->getConfigInterface($config));
