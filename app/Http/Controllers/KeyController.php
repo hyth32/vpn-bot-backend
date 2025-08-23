@@ -207,7 +207,7 @@ class KeyController extends Controller
         }
 
         $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-        $config = $this->keyService->acceptPayment($dto);
+        $config = $this->keyService->acceptPayment($user, $dto);
 
         $user->setFreeKeyUsed();
 
@@ -236,7 +236,8 @@ class KeyController extends Controller
     public function acceptPayment(KeyOrderRequest $request)
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        return ['config' => $this->keyService->acceptPayment($dto)];
+        $user = $this->userRepository->findByTelegramId($dto->getTelegramId());
+        return ['config' => $this->keyService->acceptPayment($user, $dto)];
     }
 
     private function checkAccess(string $telegramId, int $keyId): bool

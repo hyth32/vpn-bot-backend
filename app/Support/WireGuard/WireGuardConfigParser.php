@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Support\WireGuard;
+
+use Illuminate\Http\Client\Response;
+
+class WireGuardConfigParser
+{
+    public function parse(Response $config): string
+    {
+        $resultConfig = collect();
+        $resultConfig->push($this->getConfigInterface($config));
+        $resultConfig->push($this->getConfigPeer($config));
+
+        return implode("\n", $resultConfig->toArray());
+    }
+
+    public function getConfigInterface($config)
+    {
+        $interface = collect();
+        $interface->push('[Interface]');
+        $interface->push('Private key = ' . $config['PrivateKey']);
+        $interface->push('Address = ' . implode(',', $config['Addresses']));
+        $interface->push('DNS = ' . implode(',', $config['Dns']['Value']));
+        $interface->push('MTU = ' . $config['Mtu']['Value']);
+
+        return implode("\n", $interface->toArray());
+    }
+
+    public function getConfigPeer($config)
+    {
+        $peer = collect();
+        $peer->push('[Peer]');
+        $peer->push('PublicKey = ' . $config['PublicKey']);
+        $peer->push('Endpoint = ' . $config['Endpoint']['Value']);
+        $peer->push('AllowedIPs = ' . implode(',', $config['AllowedIPs']['Value']));
+        $peer->push('PresharedKey = ' . $config['PersistentKeepalive']['Value']);
+        $peer->push('PersistentKeepalive = ' . $config['PublicKey']);
+
+        return implode("\n", $peer->toArray());
+    }
+}
