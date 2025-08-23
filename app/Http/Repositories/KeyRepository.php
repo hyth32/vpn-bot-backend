@@ -6,14 +6,9 @@ use App\Models\Key;
 
 class KeyRepository
 {
-    public function create(array $data)
+    public function create(array $data): Key
     {
-        try {
-            $key = Key::create($data);
-            return $key;
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Failed to create key: ' . $e->getMessage());
-        }
+        return Key::create($data);
     }
 
     public function index(int $userId, int $offset, int $limit)
@@ -25,8 +20,23 @@ class KeyRepository
             ->get();
     }
 
-    public function findOne(int $id)
+    public function findOne(int $id): Key
     {
         return Key::with('region')->find($id);
+    }
+
+    public function countByUserId(int $userId): int
+    {
+        return Key::where('user_id', $userId)->count();
+    }
+
+    public function existsByUserId(int $userId, int $keyId): bool
+    {
+        return Key::where('id', $keyId)->where('user_id', $userId)->exists();
+    }
+
+    public function getConfigId(int $keyId): ?string
+    {
+        return Key::where('id', $keyId)->value('key');
     }
 }

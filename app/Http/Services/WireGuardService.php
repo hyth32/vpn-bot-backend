@@ -2,32 +2,25 @@
 
 namespace App\Http\Services;
 
+use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\WireGuardRepository;
-use App\Models\Key;
-use App\Models\User;
 
 class WireGuardService
 {
     public function __construct(
-        private readonly WireGuardRepository $repository,
+        private WireGuardRepository $repository,
+        private KeyRepository $keyRepository,
     ) {}
 
-    public function createPeer(User $user, int $expirationDays)
+    public function createPeer(int $userId, string $userName, int $expirationDays)
     {
-        $configName = $this->getConfigName($user);
-
+        $keysCount = $this->keyRepository->countByUserId($userId);
+        $configName = "{$userName}-{$keysCount}";
         return $this->repository->createConfig($configName, $expirationDays);
     }
     
-    public function getPeer(Key $key)
+    public function getPeer(string $configId)
     {
-        $configId = $key->key;
         return $this->repository->findConfig($configId);
-    }
-    
-    public function getConfigName(User $user)
-    {
-        $keysCount = $user->keys()->count() + 1;
-        return "{$user->name}-{$keysCount}";
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\DTOs\KeyOrderDTO;
+use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
@@ -18,6 +19,7 @@ class KeyController extends Controller
     public function __construct(
         private KeyService $keyService,
         private UserRepository $userRepository,
+        private KeyRepository $repository,
     ) {}
 
     /**
@@ -69,8 +71,8 @@ class KeyController extends Controller
     public function index(KeyListRequest $request)
     {
         $data = $request->validated();
-        $user = $this->userRepository->findByTelegramId($data['telegram_id']);
-        $keys = $this->keyService->listKeys($user->id, $data['offset'], $data['limit']);
+        $userId = $this->userRepository->getIdFromTelegramId($data['telegram_id']);
+        $keys = $this->keyService->listKeys($userId, $data['offset'], $data['limit']);
         return KeyShortResource::collection($keys);
     }
 
@@ -200,16 +202,15 @@ class KeyController extends Controller
         $data = $request->validated();
         $telegramId = $data['telegram_id'];
         $regionId = $data['region_id'];
-        $user = $this->userRepository->findByTelegramId($telegramId);
 
-        if ($user->isFreeKeyUsed()) {
+        if ($this->userRepository->hasUsedFreeKey($telegramId)) {
             abort(403, 'Бесплатный ключ уже использован');
         }
 
         $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-        $config = $this->keyService->acceptPayment($user, $dto);
+        $config = $this->keyService->acceptPayment($telegramId, $dto);
 
-        $user->setFreeKeyUsed();
+        $this->userRepository->markFreeKeyUsed($telegramId);
 
         return ['config' => $config];
     }
@@ -236,14 +237,13 @@ class KeyController extends Controller
     public function acceptPayment(KeyOrderRequest $request)
     {
         $dto = KeyOrderDTO::fromRequest($request->validated());
-        $user = $this->userRepository->findByTelegramId($dto->getTelegramId());
-        return ['config' => $this->keyService->acceptPayment($user, $dto)];
+        return ['config' => $this->keyService->acceptPayment($dto)];
     }
 
     private function checkAccess(string $telegramId, int $keyId): bool
     {
-        $user = $this->userRepository->findByTelegramId($telegramId);
-        $access = $user->keys()->where('id', $keyId)->exists();
+        $userId = $this->userRepository->getIdFromTelegramId($telegramId);
+        $access = $this->repository->existsByUserId($userId, $keyId);
 
         if (!$access) {
             abort(403, 'Доступ запрещен');

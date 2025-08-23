@@ -16,4 +16,12 @@ class PriceRepository
             ->orderBy('key_count')
             ->get();
     }
+
+    public function getPrice(int $regionId, int $periodId, int $keyCount): ?float
+    {
+        return Price::where('region_id' , $regionId)
+            ->where('period_id', $periodId)
+            ->where('key_count', $keyCount)
+            ->value('amount');
+    }
 }

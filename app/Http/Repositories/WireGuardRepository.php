@@ -41,6 +41,7 @@ class WireGuardRepository
 
     public function findConfig(string $configId)
     {
+        $configId = rawurlencode($configId);
         $getPeerUrl = "$this->baseUrl/peer/by-id/$configId";
         $responseConfig = Http::withBasicAuth($this->username, $this->password)
             ->get($getPeerUrl);

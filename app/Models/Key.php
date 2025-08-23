@@ -48,6 +48,6 @@ class Key extends Model
 
     public function getPrice()
     {
-        return Price::getAmount($this->region_id, $this->period_id);
+        return Price::getAmount($this->region_id, $this->period_id, 1);
     }
 }
