@@ -72,8 +72,10 @@ class KeyService
         $periodName = $this->periodRepository->getName($key->period_id);
 
         $amount = $this->priceRepository->getPrice($key->region_id, $key->period_id);
-        
+
         $paymentLink = 'https://google.com';
+
+        // отправка запроса к wg на update
 
         return new KeyResponseDTO(
             region_name: $regionName,
@@ -84,28 +86,38 @@ class KeyService
         );
     }
 
+    public function deleteKey(int $keyId)
+    {
+        $configId = $this->repository->getConfigId($keyId);
+        $this->wireGuardService->removePeer($configId);
+    }
+
     // TODO: переписать на подтверждение платежа из YooKassa
-    public function acceptPayment(KeyOrderDTO $dto)
+    public function acceptPayment(KeyOrderDTO $dto): array
     {
         $telegramId = $dto->getTelegramId();
         $userId = $this->userRepository->getIdFromTelegramId($telegramId);
         $userName = $this->userRepository->getNameFromTelegramId($telegramId);
+        $quantity = $dto->getQuantity();
 
         // temp
         $expirationDays = 1;
-        $config = $this->wireGuardService->createPeer($userId, $userName, $expirationDays);
+        $existingKeysCount = $this->repository->countByUserId($userId);
+        $configs = $this->wireGuardService->createPeers($userName, $existingKeysCount, $expirationDays, $quantity);
 
-        $keyData = [
-            'user_id' => $userId,
-            'region_id' => $dto->getRegionId(),
-            'period_id' => $dto->getPeriodId(),
-            'expiration_date' => $config['ExpiresAt'],
-            'config_id' => $config['Identifier'],
-            'config_name' => $config['DisplayName'],
-        ];
+        $parsedConfigs = collect();
+        foreach ($configs as $config) {
+            $this->repository->create([
+                'user_id' => $userId,
+                'region_id' => $dto->getRegionId(),
+                'period_id' => $dto->getPeriodId(),
+                'expiration_date' => $config['ExpiresAt'],
+                'config_id' => $config['Identifier'],
+                'config_name' => $config['DisplayName'],
+            ]);
+            $parsedConfigs->push($this->parser->parse($config));
+        }
 
-        $this->repository->create($keyData);
-
-        return $this->parser->parse($config);
+        return $parsedConfigs->toArray();
     }
 }

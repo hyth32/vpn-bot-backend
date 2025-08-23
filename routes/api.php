@@ -20,6 +20,8 @@ Route::prefix('v1')->group(function () {
             Route::post('checkout', 'buy');
             Route::post('accept-payment', 'acceptPayment');
             Route::post('free-key', 'freeKey');
+            Route::post('{keyId}/renew', 'renew');
+            Route::delete('{keyId}', 'delete');
         });
 
         Route::get('regions', [RegionController::class, 'index']);

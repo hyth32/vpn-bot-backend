@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Requests\DeleteKeyRequest;
 use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
 use App\Http\Requests\Key\RenewKeyRequest;
@@ -202,7 +203,7 @@ class KeyController extends Controller
         }
 
         $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-        $config = $this->service->acceptPayment($telegramId, $dto);
+        $config = $this->service->acceptPayment($dto)[0];
 
         $this->userRepository->markFreeKeyUsed($telegramId);
 
@@ -245,6 +246,30 @@ class KeyController extends Controller
         }
 
         return $this->service->renewKey($keyId);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/keys/{keyId}",
+     *     tags={"Keys"},
+     *     summary="Удаление ключа",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RenewKeyRequest"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent()
+     *     )
+     * )
+     */
+    public function delete(int $keyId, DeleteKeyRequest $request)
+    {
+        $telegramId = $request->validated()['telegram_id'];
+        $this->checkAccess($telegramId, $keyId);
+
+        return $this->service->deleteKey($keyId);
     }
 
     /**

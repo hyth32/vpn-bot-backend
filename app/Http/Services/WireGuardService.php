@@ -12,15 +12,38 @@ class WireGuardService
         private KeyRepository $keyRepository,
     ) {}
 
-    public function createPeer(int $userId, string $userName, int $expirationDays): array
+    public function createPeers(string $userName, int $existingCount, int $expirationDays, int $keysCount): array
     {
-        $keysCount = $this->keyRepository->countByUserId($userId);
-        $configName = "{$userName}-{$keysCount}";
+        $baseConfigName = $userName . '-';
+        
+        $configs = [];
+        for ($i = 0; $i < $keysCount; $i++) {
+            $configName = $baseConfigName . $existingCount + $i;
+            $configs[] = $this->createPeer($configName, $expirationDays);
+        }
+
+        return $configs;
+    }
+
+    public function createPeer(string $configName, int $expirationDays): array
+    {
         return $this->repository->createConfig($configName, $expirationDays);
     }
     
     public function getPeer(string $configId): array
     {
         return $this->repository->findConfig($configId);
+    }
+
+    public function removePeer(string $configId)
+    {
+        $isDeleted = $this->repository->deleteConfig($configId);
+        if (!$isDeleted) {
+            abort(500, 'Не удалось удалить ключ');
+        }
+
+        if ($isDeleted) {
+            $this->keyRepository->deleteByConfigId($configId);
+        }
     }
 }

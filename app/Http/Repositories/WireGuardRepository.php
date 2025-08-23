@@ -44,8 +44,7 @@ class WireGuardRepository
     {
         $configId = rawurlencode($configId);
         $getPeerUrl = "$this->baseUrl/peer/by-id/$configId";
-        $responseConfig = Http::withBasicAuth($this->username, $this->password)
-            ->get($getPeerUrl);
+        $responseConfig = Http::withBasicAuth($this->username, $this->password)->get($getPeerUrl);
 
         $decodedConfig = json_decode($responseConfig, true);
         if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
@@ -53,6 +52,14 @@ class WireGuardRepository
         }
 
         return $responseConfig->json();
+    }
+
+    public function deleteConfig(string $configId)
+    {
+        $configId = rawurlencode($configId);
+        $deletePeerUrl = "$this->baseUrl/peer/by-id/$configId";
+        $response = Http::withBasicAuth($this->username, $this->password)->delete($deletePeerUrl);
+        return $response->status() == 204;
     }
 
     public function syncConfig(array $config): array

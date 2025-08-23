@@ -3,6 +3,7 @@
 namespace App\Http\Repositories;
 
 use App\Models\Key;
+use Illuminate\Database\Eloquent\Collection;
 
 class KeyRepository
 {
@@ -23,6 +24,11 @@ class KeyRepository
     public function findOne(int $id): Key
     {
         return Key::with('region')->find($id);
+    }
+
+    public function deleteByConfigId(string $configId)
+    {
+        return Key::where('config_id', $configId)->delete();
     }
 
     public function countByUserId(int $userId): int
