@@ -241,8 +241,8 @@ class KeyController extends Controller
         $this->checkAccess($telegramId, $keyId);
 
         $isExpired = $this->repository->isKeyExpired($keyId);
-        if ($isExpired) {
-            abort(400, 'Срок действия ключа истек, создайте новый');
+        if (!$isExpired) {
+            abort(400, 'Срок действия ключа еще не истек');
         }
 
         return $this->service->renewKey($keyId);

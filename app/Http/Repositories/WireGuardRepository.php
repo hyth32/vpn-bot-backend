@@ -12,6 +12,9 @@ class WireGuardRepository
     private string $password;
     private string $baseUrl;
 
+    const STATUS_SUCCESS = 200;
+    const STATUS_DELETED = 204;
+
     public function __construct(
         private WireGuardConfigFormatter $formatter,
     ) {
@@ -37,7 +40,18 @@ class WireGuardRepository
         $baseConfig = $this->getBaseConfig();
         $rawConfig = $this->formatter->prepareConfig($baseConfig, $configName, $expirationDays);
 
-        return $this->syncConfig($rawConfig);
+        $syncConfigUrl = "$this->baseUrl/peer/new";
+
+        $responseConfig = Http::withBasicAuth($this->username, $this->password)
+            ->withBody(json_encode($rawConfig))
+            ->post($syncConfigUrl);
+
+        $decodedConfig = $responseConfig->json();
+        if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
+            throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
+        }
+
+        return $decodedConfig;
     }
 
     public function findConfig(string $configId): array
@@ -46,12 +60,32 @@ class WireGuardRepository
         $getPeerUrl = "$this->baseUrl/peer/by-id/$configId";
         $responseConfig = Http::withBasicAuth($this->username, $this->password)->get($getPeerUrl);
 
-        $decodedConfig = json_decode($responseConfig, true);
+        $decodedConfig = $responseConfig->json();
         if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
             throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
         }
 
         return $responseConfig->json();
+    }
+
+    public function renewConfig(string $configId, int $expirationDays)
+    {
+        $peerConfig = $this->findConfig($configId);
+        $updatedConfig = $this->formatter->updateConfigExpiration($peerConfig, $expirationDays);
+        
+        $updateConfigUrl = "$this->baseUrl/peer/by-id/$configId";
+        $response = Http::withBasicAuth($this->username, $this->password)
+            ->withBody($updatedConfig)
+            ->put($updateConfigUrl);
+
+        $decodedConfig = $response->json();
+        if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
+            throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
+        }
+
+
+        // менять expiration_date у модели ключа после выхода        
+        return $response->status() == self::STATUS_SUCCESS;
     }
 
     public function deleteConfig(string $configId)
@@ -59,22 +93,6 @@ class WireGuardRepository
         $configId = rawurlencode($configId);
         $deletePeerUrl = "$this->baseUrl/peer/by-id/$configId";
         $response = Http::withBasicAuth($this->username, $this->password)->delete($deletePeerUrl);
-        return $response->status() == 204;
-    }
-
-    public function syncConfig(array $config): array
-    {
-        $syncConfigUrl = "$this->baseUrl/peer/new";
-
-        $responseConfig = Http::withBasicAuth($this->username, $this->password)
-            ->withBody(json_encode($config))
-            ->post($syncConfigUrl);
-
-        $decodedConfig = json_decode($responseConfig, true);
-        if (isset($decodedConfig['Code']) && isset($decodedConfig['Message'])) {
-            throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
-        }
-
-        return $responseConfig->json();
+        return $response->status() == self::STATUS_DELETED;
     }
 }
