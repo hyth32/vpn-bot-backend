@@ -28,8 +28,9 @@ class Price extends Model
         $priceRecord = Price::query()
             ->where('region_id', $regionId)
             ->where('period_id', $periodId)
+            ->where('key_count', $quantity)
             ->firstOrFail();
 
-        return $priceRecord->amount * $quantity;
+        return $priceRecord->amount;
     }
 }
