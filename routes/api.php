@@ -5,9 +5,14 @@ use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\UserController;
+use App\Http\Integrations\YooKassaCallbackController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
+    Route::controller(YooKassaCallbackController::class)->group(function () {
+        Route::get('handle', 'handle');
+    });
+
     Route::middleware('check.token')->group(function () {
         Route::controller(UserController::class)->prefix('users')->group(function () {
             Route::post('/', 'store');
