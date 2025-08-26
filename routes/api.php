@@ -9,8 +9,8 @@ use App\Http\Integrations\YooKassaCallbackController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    Route::controller(YooKassaCallbackController::class)->group(function () {
-        Route::get('handle', 'handle');
+    Route::controller(YooKassaCallbackController::class)->prefix('yookassa/webhooks')->group(function () {
+        Route::post('/', 'handle');
     });
 
     Route::middleware('check.token')->group(function () {
