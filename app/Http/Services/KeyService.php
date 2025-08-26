@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Events\OrderCreated;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\DTOs\KeyResponseDTO;
+use App\Http\DTOs\YooKassa\BankCardPaymentDTO;
 use App\Http\Integrations\YooKassaService;
 use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\PeriodRepository;
@@ -43,7 +45,7 @@ class KeyService
         return $this->parser->parse($config);
     }
 
-    public function buyKey(KeyOrderDTO $dto): KeyResponseDTO
+    public function buyKey(KeyOrderDTO $dto)
     {
         $regionName = $this->regionRepository->getName($dto->getRegionId());
         $periodName = $this->periodRepository->getName($dto->getPeriodId());
@@ -54,7 +56,10 @@ class KeyService
             $dto->getQuantity(),
         );
 
-        $paymentLink = 'https://google.com';
+        $payment = new BankCardPaymentDTO($amount);
+        $response = $this->yooKassaService->createPayment($payment);
+
+        $paymentLink = $response->getPaymentUrl() ?? 'https://google.com';
 
         return new KeyResponseDTO(
             region_name: $regionName,
