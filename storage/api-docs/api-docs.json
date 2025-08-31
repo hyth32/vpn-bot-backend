@@ -111,6 +111,33 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "tags": [
+                    "Keys"
+                ],
+                "summary": "Удаление ключа",
+                "operationId": "0bd9181dcf1937a356c4fc1b617d0e46",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RenewKeyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/v1/keys/{keyId}/config": {
@@ -542,6 +569,16 @@
                     "telegram_id": {
                         "type": "string",
                         "example": "123456789"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteKeyRequest": {
+                "description": "Запрос на удаление ключа",
+                "properties": {
+                    "telegram_id": {
+                        "description": "Telegram ID пользователя",
+                        "type": "string"
                     }
                 },
                 "type": "object"
