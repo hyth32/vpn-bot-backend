@@ -16,6 +16,7 @@ class YooKassaWebhookRequest extends FormRequest
             'object.status' => 'string',
             'object.amount' => 'array',
             'object.amount.value' => 'string',
+            'object.amount.currency' => 'string',
             'object.income_amount' => 'array',
             'object.income_amount.value' => 'string',
             'object.income_amount.currency' => 'string',

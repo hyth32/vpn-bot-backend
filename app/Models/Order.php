@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Order extends Model
+{
+    protected $fillable = [
+        'external_id',
+        'user_id',
+        'amount',
+        'currency',
+        'test',
+        'paid',
+        'metadata',
+        'region_id',
+        'period_id',
+        'key_count',
+    ];
+
+    protected $casts = [
+        'metadata' => 'array',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function period(): BelongsTo
+    {
+        return $this->belongsTo(Period::class);
+    }
+}

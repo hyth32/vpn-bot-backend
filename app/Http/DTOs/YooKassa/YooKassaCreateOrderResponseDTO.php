@@ -39,8 +39,33 @@ class YooKassaCreateOrderResponseDTO
         );
     }
 
+    public function getExternalId()
+    {
+        return $this->id;
+    }
+
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
     public function getPaymentUrl(): string
     {
         return $this->confirmationUrl;
+    }
+
+    public function isTest()
+    {
+        return $this->test;
+    }
+
+    public function isPaid()
+    {
+        return $this->paid;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 }

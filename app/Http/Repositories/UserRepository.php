@@ -36,6 +36,11 @@ class UserRepository
         return $this->getColumnByTelegramId($telegramId, 'free_key_used');
     }
 
+    public function getTelegramId(int $id): ?string
+    {
+        return User::where('id', $id)->value('telegram_id');
+    }
+
     public function markFreeKeyUsed(string $telegramId): int
     {
         return User::where('telegram_id', $telegramId)->update(['free_key_used' => true]);

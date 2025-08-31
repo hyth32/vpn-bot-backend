@@ -13,6 +13,7 @@ use App\Http\Repositories\PriceRepository;
 use App\Http\Repositories\RegionRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\Key;
+use App\Models\Order;
 use App\Support\WireGuard\WireGuardConfigParser;
 
 class KeyService
@@ -57,9 +58,23 @@ class KeyService
         );
 
         $payment = new BankCardPaymentDTO($amount);
-        $response = $this->yooKassaService->createPayment($payment);
+        $paymentResponse = $this->yooKassaService->createPayment($payment);
 
-        $paymentLink = $response->getPaymentUrl() ?? 'https://google.com';
+        $paymentLink = $paymentResponse->getPaymentUrl() ?? 'https://google.com';
+
+        $userId = $this->userRepository->getIdFromTelegramId($dto->getTelegramId());
+
+        Order::create([
+            'external_id' => $paymentResponse->getExternalId(),
+            'user_id' => $userId,
+            'amount' => $paymentResponse->getAmount(),
+            'test' => $paymentResponse->isTest(),
+            'paid' => $paymentResponse->isPaid(),
+            'metadata' => $paymentResponse->getMetadata(),
+            'region_id' => $dto->getRegionId(),
+            'period_id' => $dto->getPeriodId(),
+            'key_count' => $dto->getQuantity(),
+        ]);
 
         return new KeyResponseDTO(
             region_name: $regionName,
