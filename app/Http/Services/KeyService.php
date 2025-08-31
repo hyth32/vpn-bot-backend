@@ -60,13 +60,11 @@ class KeyService
         $payment = new BankCardPaymentDTO($amount);
         $paymentResponse = $this->yooKassaService->createPayment($payment);
 
-        $paymentLink = $paymentResponse->getPaymentUrl() ?? 'https://google.com';
-
         $userId = $this->userRepository->getIdFromTelegramId($dto->getTelegramId());
 
         Order::create([
-            'external_id' => $paymentResponse->getExternalId(),
             'user_id' => $userId,
+            'external_id' => $paymentResponse->getExternalId(),
             'amount' => $paymentResponse->getAmount(),
             'test' => $paymentResponse->isTest(),
             'paid' => $paymentResponse->isPaid(),
@@ -81,7 +79,7 @@ class KeyService
             period_name: $periodName,
             quantity: $dto->getQuantity(),
             amount: $amount,
-            payment_link: $paymentLink,
+            payment_link: $paymentResponse->getPaymentUrl(),
         );
     }
 
@@ -110,34 +108,5 @@ class KeyService
     {
         $configId = $this->repository->getConfigId($keyId);
         $this->wireGuardService->removePeer($configId);
-    }
-
-    // TODO: переписать на подтверждение платежа из YooKassa
-    public function acceptPayment(KeyOrderDTO $dto): array
-    {
-        $telegramId = $dto->getTelegramId();
-        $userId = $this->userRepository->getIdFromTelegramId($telegramId);
-        $userName = $this->userRepository->getNameFromTelegramId($telegramId);
-        $quantity = $dto->getQuantity();
-
-        // temp
-        $expirationDays = 1;
-        $existingKeysCount = $this->repository->countByUserId($userId);
-        $configs = $this->wireGuardService->createPeers($userName, $existingKeysCount, $expirationDays, $quantity);
-
-        $parsedConfigs = collect();
-        foreach ($configs as $config) {
-            $this->repository->create([
-                'user_id' => $userId,
-                'region_id' => $dto->getRegionId(),
-                'period_id' => $dto->getPeriodId(),
-                'expiration_date' => $config['ExpiresAt'],
-                'config_id' => $config['Identifier'],
-                'config_name' => $config['DisplayName'],
-            ]);
-            $parsedConfigs->push($this->parser->parse($config));
-        }
-
-        return $parsedConfigs->toArray();
     }
 }

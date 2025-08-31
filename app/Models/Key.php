@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="id", type="integer", description="ID ключа"),
  *     @OA\Property(property="name", type="string", description="Название ключа"),
  *     @OA\Property(property="region_name", type="string", description="Название региона"),
- *     @OA\Property(property="region_flag", type="string", description="Флаг региона"),
  * })
  */
 class Key extends Model
@@ -24,9 +23,7 @@ class Key extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id',
-        'region_id',
-        'period_id',
+        'order_id',
         'config_id',
         'config_name',
         'expiration_date',
@@ -36,23 +33,8 @@ class Key extends Model
         'expiration_date' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    public function order(): BelongsTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function region(): BelongsTo
-    {
-        return $this->belongsTo(Region::class);
-    }
-
-    public function period(): BelongsTo
-    {
-        return $this->belongsTo(Period::class);
-    }
-
-    public function getPrice()
-    {
-        return Price::getAmount($this->region_id, $this->period_id);
+        return $this->belongsTo(Order::class);
     }
 }

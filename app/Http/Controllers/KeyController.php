@@ -192,23 +192,23 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function freeKey(FreeKeyRequest $request)
-    {
-        $data = $request->validated();
-        $telegramId = $data['telegram_id'];
-        $regionId = $data['region_id'];
+    // public function freeKey(FreeKeyRequest $request)
+    // {
+    //     $data = $request->validated();
+    //     $telegramId = $data['telegram_id'];
+    //     $regionId = $data['region_id'];
 
-        if ($this->userRepository->hasUsedFreeKey($telegramId)) {
-            abort(403, 'Бесплатный ключ уже использован');
-        }
+    //     if ($this->userRepository->hasUsedFreeKey($telegramId)) {
+    //         abort(403, 'Бесплатный ключ уже использован');
+    //     }
 
-        $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-        $config = $this->service->acceptPayment($dto)[0];
+    //     $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
+    //     $config = $this->service->acceptPayment($dto)[0];
 
-        $this->userRepository->markFreeKeyUsed($telegramId);
+    //     $this->userRepository->markFreeKeyUsed($telegramId);
 
-        return ['config' => $config];
-    }
+    //     return ['config' => $config];
+    // }
 
     /**
      * @OA\Post(
@@ -291,11 +291,11 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function acceptPayment(KeyOrderRequest $request)
-    {
-        $dto = KeyOrderDTO::fromRequest($request->validated());
-        return ['config' => $this->service->acceptPayment($dto)];
-    }
+    // public function acceptPayment(KeyOrderRequest $request)
+    // {
+    //     $dto = KeyOrderDTO::fromRequest($request->validated());
+    //     return ['config' => $this->service->acceptPayment($dto)];
+    // }
 
     private function checkAccess(string $telegramId, int $keyId): bool
     {

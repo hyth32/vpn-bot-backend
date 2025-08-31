@@ -11,8 +11,13 @@ class PeriodRepository
         return Period::orderBy('id', 'asc')->offset($offset)->get();
     }
 
-    public function getName(int $periodId): ?string
+    public function getName(int $id): ?string
     {
-        return Period::where('id', $periodId)->value('name');
+        return Period::where('id', $id)->value('name');
+    }
+
+    public function getExpirationDays(int $id): ?int
+    {
+        return Period::where('id', $id)->value('value');
     }
 }

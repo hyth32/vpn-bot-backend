@@ -10,18 +10,11 @@ return new class extends Migration
     {
         Schema::create('keys', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
-            $table->foreignId('region_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
-            $table->foreignId('period_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
+            $table->integer('order_id');
+            $table->foreign('order_id')
+                ->references('id')
+                ->on('orders')
+                ->cascadeOnDelete();
             $table->string('config_id');
             $table->string('config_name');
             $table->timestamp('expiration_date');

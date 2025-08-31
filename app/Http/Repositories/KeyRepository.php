@@ -23,7 +23,7 @@ class KeyRepository
 
     public function findOne(int $id): Key
     {
-        return Key::with('region')->find($id);
+        return Key::with('order')->find($id);
     }
 
     public function deleteByConfigId(string $configId)

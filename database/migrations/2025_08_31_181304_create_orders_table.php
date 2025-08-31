@@ -33,6 +33,7 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->integer('key_count');
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

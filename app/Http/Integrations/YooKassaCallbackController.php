@@ -2,9 +2,13 @@
 
 namespace App\Http\Integrations;
 
+use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\OrderRepository;
+use App\Http\Repositories\PeriodRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\YooKassa\YooKassaWebhookRequest;
+use App\Http\Services\WireGuardService;
+use App\Jobs\CreateWireGuardPeer;
 use App\Jobs\SendOrderStatusMessage;
 
 class YooKassaCallbackController
@@ -12,6 +16,8 @@ class YooKassaCallbackController
     public function __construct(
         private UserRepository $userRepository,
         private OrderRepository $orderRepository,
+        private PeriodRepository $periodRepository,
+        private WireGuardService $wireGuardService,
     ) {}
 
     public function handle(YooKassaWebhookRequest $request)
@@ -28,15 +34,27 @@ class YooKassaCallbackController
         $currency = $amountObject->get('currency');
 
         $order = $this->orderRepository->setPaidStatus($orderExternalId);
+
         $telegramId = $this->userRepository->getTelegramId($order->user_id);
 
-        info('PARSED DATA: ' . json_encode($data) . '\n');
+        $keyOrderDto = new KeyOrderDTO(
+            telegram_id: $telegramId,
+            region_id: $order->region_id,
+            period_id: $order->period_id,
+            quantity: $order->key_count,
+        );
+
+        $expirationDays = $this->periodRepository->getExpirationDays($order->period_id);
+
+        dispatch(new CreateWireGuardPeer($order->id, $expirationDays, $keyOrderDto))
+            ->onQueue('wireguard');
 
         dispatch(new SendOrderStatusMessage([
             'success' => true,
             'telegram_id' => $telegramId,
             'amount' => $amount,
             'currency' => $currency,
-        ]));
+        ]))
+            ->onQueue('notifications');
     }
 }
