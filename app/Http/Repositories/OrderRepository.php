@@ -17,4 +17,10 @@ class OrderRepository
         $order->update(['paid' => true]);
         return $order;
     }
+
+    public function countKeysByUserId(int $userId): ?int
+    {
+        return Order::where('user_id', $userId)
+            ->sum('key_count');
+    }
 }

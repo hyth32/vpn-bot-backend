@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\KeyRepository;
+use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Services\WireGuardService;
 use App\Models\Key;
@@ -25,11 +26,11 @@ class CreateWireGuardPeer implements ShouldQueue
     public function handle(
         WireGuardService $wireGuardService,
         UserRepository $userRepository,
-        KeyRepository $keyRepository,
+        OrderRepository $orderRepository,
     ): void {
         $userId = $userRepository->getIdFromTelegramId($this->dto->getTelegramId());
         $userName = $userRepository->getNameFromTelegramId($this->dto->getTelegramId());
-        $existingKeysCount = $keyRepository->countByUserId($userId);
+        $existingKeysCount = $orderRepository->countKeysByUserId($userId);
 
         $configs = $wireGuardService->createPeers(
             $userName,

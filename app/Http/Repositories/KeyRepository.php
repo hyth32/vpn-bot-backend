@@ -31,11 +31,6 @@ class KeyRepository
         return Key::where('config_id', $configId)->delete();
     }
 
-    public function countByUserId(int $userId): int
-    {
-        return Key::where('user_id', $userId)->count();
-    }
-
     public function existsByUserId(int $userId, int $keyId): bool
     {
         return Key::where('id', $keyId)->where('user_id', $userId)->exists();
