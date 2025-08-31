@@ -10,6 +10,7 @@ use App\Http\Requests\YooKassa\YooKassaWebhookRequest;
 use App\Http\Services\WireGuardService;
 use App\Jobs\CreateWireGuardPeer;
 use App\Jobs\SendOrderStatusMessage;
+use Illuminate\Support\Facades\Bus;
 
 class YooKassaCallbackController
 {
@@ -46,15 +47,15 @@ class YooKassaCallbackController
 
         $expirationDays = $this->periodRepository->getExpirationDays($order->period_id);
 
-        dispatch(new CreateWireGuardPeer($order->id, $expirationDays, $keyOrderDto))
-            ->onQueue('wireguard');
-
-        dispatch(new SendOrderStatusMessage([
-            'success' => true,
-            'telegram_id' => $telegramId,
-            'amount' => $amount,
-            'currency' => $currency,
-        ]))
-            ->onQueue('notifications');
+        Bus::chain([
+            (new CreateWireGuardPeer($order->id, $expirationDays, $keyOrderDto))
+                ->onQueue('wireguard'),
+            (new SendOrderStatusMessage([
+                'success' => true,
+                'telegram_id' => $telegramId,
+                'amount' => $amount,
+                'currency' => $currency,
+            ]))->onQueue('notifications'),
+        ])->dispatch();
     }
 }
