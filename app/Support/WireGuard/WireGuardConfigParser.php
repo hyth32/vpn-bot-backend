@@ -30,7 +30,7 @@ class WireGuardConfigParser
     {
         $peer = collect();
         $peer->push('[Peer]');
-        $peer->push('PublicKey = ' . $config['EndpointPublicKey']);
+        $peer->push('PublicKey = ' . $config['EndpointPublicKey']['Value']);
         $peer->push('Endpoint = ' . $config['Endpoint']['Value']);
         $peer->push('AllowedIPs = ' . implode(',', $config['AllowedIPs']['Value']));
         $peer->push('PresharedKey = ' . $config['PresharedKey']);
