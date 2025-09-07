@@ -12,10 +12,10 @@ class KeyRepository
         return Key::create($data);
     }
 
-    public function index(int $userId, int $offset, int $limit)
+    public function index(int $orderId, int $offset, int $limit)
     {
         return Key::with('region')
-            ->where('user_id', $userId)
+            ->where('order_id', $orderId)
             ->offset($offset)
             ->limit($limit)
             ->get();

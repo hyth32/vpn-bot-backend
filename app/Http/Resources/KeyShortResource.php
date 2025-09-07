@@ -12,8 +12,8 @@ class KeyShortResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->config_name,
-            'region_name' => $this->region->name,
-            'region_flag' => $this->region->flag,
+            'region_name' => $this->order->region->name,
+            'region_flag' => $this->order->region->flag,
         ];
     }
 }

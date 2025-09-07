@@ -8,6 +8,7 @@ use App\Http\DTOs\KeyResponseDTO;
 use App\Http\DTOs\YooKassa\BankCardPaymentDTO;
 use App\Http\Integrations\YooKassaService;
 use App\Http\Repositories\KeyRepository;
+use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\PeriodRepository;
 use App\Http\Repositories\PriceRepository;
 use App\Http\Repositories\RegionRepository;
@@ -22,6 +23,7 @@ class KeyService
         private YooKassaService $yooKassaService,
         private WireGuardService $wireGuardService,
         private KeyRepository $repository,
+        private OrderRepository $orderRepository,
         private UserRepository $userRepository,
         private RegionRepository $regionRepository,
         private PeriodRepository $periodRepository,
@@ -29,9 +31,10 @@ class KeyService
         private WireGuardConfigParser $parser,
     ) {}
 
-    public function listKeys(int $userId, int $offset, int $limit)
+    public function listKeys(int $userId)
     {
-        return $this->repository->index($userId, $offset, $limit);
+        $userOrderIds = Order::where('user_id', $userId)->pluck('id');
+        return Key::whereIn('order_id', $userOrderIds)->get();
     }
 
     public function showKey(int $id): Key
