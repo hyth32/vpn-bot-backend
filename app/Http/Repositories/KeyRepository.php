@@ -41,6 +41,11 @@ class KeyRepository
         return Key::where('id', $keyId)->value('config_id');
     }
 
+    public function getConfigName(int $id): ?string
+    {
+        return Key::where('id', $id)->value('config_name');
+    }
+
     public function isKeyExpired(int $keyId): bool
     {
         $expirationDate = Key::where('id', $keyId)->value('expiration_date');

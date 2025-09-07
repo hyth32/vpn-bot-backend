@@ -53,8 +53,6 @@ class YooKassaCallbackController
             (new SendOrderStatusMessage([
                 'success' => true,
                 'telegram_id' => $telegramId,
-                'amount' => $amount,
-                'currency' => $currency,
             ]))->onQueue('notifications'),
         ])->dispatch();
     }

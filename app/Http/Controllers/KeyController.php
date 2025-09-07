@@ -15,6 +15,7 @@ use App\Http\Requests\KeyOrderRequest;
 use App\Http\Resources\KeyResource;
 use App\Http\Resources\KeyShortResource;
 use App\Http\Services\KeyService;
+use Illuminate\Support\Facades\Response;
 
 class KeyController extends Controller
 {
@@ -141,7 +142,14 @@ class KeyController extends Controller
         $telegramId = $request->validated()['telegram_id'];
         $this->checkAccess($telegramId, $keyId);
 
-        return $this->service->getConfig($keyId);
+        $parsedConfig = $this->service->getConfig($keyId);
+
+        $configName = $this->repository->getConfigName($keyId);
+
+        return Response::make($parsedConfig, 200, [
+            'Content-Type' => 'text/plain',
+            'Content-Disposition' => "attachment; filename=\"$configName.conf\"",
+        ]);
     }
 
     /**
