@@ -7,7 +7,6 @@ class WireGuardConfigParser
     public function parse(array $config): string
     {
         $resultConfig = collect();
-        info($resultConfig);
 
         $resultConfig->push($this->getConfigInterface($config));
         $resultConfig->push($this->getConfigPeer($config));
@@ -31,7 +30,7 @@ class WireGuardConfigParser
     {
         $peer = collect();
         $peer->push('[Peer]');
-        $peer->push('PublicKey = ' . $config['PublicKey']);
+        $peer->push('PublicKey = ' . $config['EndpointPublicKey']);
         $peer->push('Endpoint = ' . $config['Endpoint']['Value']);
         $peer->push('AllowedIPs = ' . implode(',', $config['AllowedIPs']['Value']));
         $peer->push('PresharedKey = ' . $config['PresharedKey']);
