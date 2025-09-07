@@ -273,31 +273,6 @@ class KeyController extends Controller
         return $this->service->deleteKey($keyId);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v1/keys/accept-payment",
-     *     tags={"Keys"},
-     *     summary="(ВРЕМЕННО) Подтверждение платежа",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/KeyOrderRequest"),
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="config", type="string", description="Конфиг"),
-     *         ),
-     *     )
-     * )
-     */
-    // public function acceptPayment(KeyOrderRequest $request)
-    // {
-    //     $dto = KeyOrderDTO::fromRequest($request->validated());
-    //     return ['config' => $this->service->acceptPayment($dto)];
-    // }
-
     private function checkAccess(string $telegramId, int $keyId): bool
     {
         $userId = $this->userRepository->getIdFromTelegramId($telegramId);

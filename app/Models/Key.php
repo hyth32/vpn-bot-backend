@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @OA\Schema(schema="Key", description="Ключ", allOf={@OA\Schema(ref="#/components/schemas/KeyShort")}, properties={
  *     @OA\Property(property="expiration_date", type="string", format="date-time", description="Дата экспирации"),
- *     @OA\Property(property="amount", type="integer", description="Стоимость продления"),
  * })
  * 
  * @OA\Schema(schema="KeyShort", description="Ключ", properties={

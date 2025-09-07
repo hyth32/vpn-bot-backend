@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Events\OrderCreated;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\DTOs\KeyResponseDTO;
 use App\Http\DTOs\YooKassa\BankCardPaymentDTO;
