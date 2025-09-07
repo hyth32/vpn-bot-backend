@@ -17,7 +17,7 @@ class WireGuardConfigParser
     {
         $interface = collect();
         $interface->push('[Interface]');
-        $interface->push('Private key = ' . $config['PrivateKey']);
+        $interface->push('PrivateKey = ' . $config['PrivateKey']);
         $interface->push('Address = ' . implode(',', $config['Addresses']));
         $interface->push('DNS = ' . implode(',', $config['Dns']['Value']));
         $interface->push('MTU = ' . $config['Mtu']['Value']);
@@ -32,8 +32,8 @@ class WireGuardConfigParser
         $peer->push('PublicKey = ' . $config['PublicKey']);
         $peer->push('Endpoint = ' . $config['Endpoint']['Value']);
         $peer->push('AllowedIPs = ' . implode(',', $config['AllowedIPs']['Value']));
-        $peer->push('PresharedKey = ' . $config['PersistentKeepalive']['Value']);
-        $peer->push('PersistentKeepalive = ' . $config['PublicKey']);
+        $peer->push('PresharedKey = ' . $config['PresharedKey']);
+        $peer->push('PersistentKeepalive = ' . $config['PersistentKeepalive']['Value']);
 
         return implode("\n", $peer->toArray());
     }
