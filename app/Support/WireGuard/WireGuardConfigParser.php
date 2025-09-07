@@ -7,6 +7,8 @@ class WireGuardConfigParser
     public function parse(array $config): string
     {
         $resultConfig = collect();
+        info($resultConfig);
+
         $resultConfig->push($this->getConfigInterface($config));
         $resultConfig->push($this->getConfigPeer($config));
 
