@@ -22,7 +22,7 @@ class WireGuardConfigParser
         $interface->push('DNS = ' . implode(',', $config['Dns']['Value']));
         $interface->push('MTU = ' . $config['Mtu']['Value']);
 
-        return implode("\n", $interface->toArray());
+        return implode("\n", $interface->toArray()) . "\n";
     }
 
     public function getConfigPeer($config)
