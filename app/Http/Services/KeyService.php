@@ -31,10 +31,10 @@ class KeyService
         private WireGuardConfigParser $parser,
     ) {}
 
-    public function listKeys(int $userId)
+    public function listKeys(int $userId, int $offset, int $limit)
     {
         $userOrderIds = Order::where('user_id', $userId)->pluck('id');
-        return Key::whereIn('order_id', $userOrderIds)->get();
+        return Key::whereIn('order_id', $userOrderIds)->offset($offset)->limit($limit)->get();
     }
 
     public function showKey(int $id): Key
