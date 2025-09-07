@@ -23,4 +23,9 @@ class OrderRepository
         return Order::where('user_id', $userId)
             ->sum('key_count');
     }
+
+    public function keyExistsByUserId(int $userId, int $keyId)
+    {
+        return Order::where('user_id', $userId)->whereHas('keys', fn ($q) => $q->where('id', $keyId))->exists();
+    }
 }

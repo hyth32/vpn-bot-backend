@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\Repositories\KeyRepository;
+use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\DeleteKeyRequest;
-use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
 use App\Http\Requests\Key\RenewKeyRequest;
 use App\Http\Requests\Key\ShowKeyRequest;
@@ -22,6 +22,7 @@ class KeyController extends Controller
         private KeyService $service,
         private UserRepository $userRepository,
         private KeyRepository $repository,
+        private OrderRepository $orderRepository,
     ) {}
 
     /**
@@ -300,7 +301,7 @@ class KeyController extends Controller
     private function checkAccess(string $telegramId, int $keyId): bool
     {
         $userId = $this->userRepository->getIdFromTelegramId($telegramId);
-        $access = $this->repository->existsByUserId($userId, $keyId);
+        $access = $this->orderRepository->keyExistsByUserId($userId, $keyId);
 
         if (!$access) {
             abort(403, 'Доступ запрещен');
