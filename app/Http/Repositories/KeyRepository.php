@@ -55,4 +55,9 @@ class KeyRepository
     {
         Key::where('id', $id)->update(['expiration_date' => $expirationDate]);
     }
+
+    public function deleteKey(int $id)
+    {
+        Key::where('id', $id)->delete();
+    }
 }
