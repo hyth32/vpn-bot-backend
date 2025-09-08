@@ -14,7 +14,9 @@ class SendOrderStatusMessage implements ShouldQueue
 
     public function __construct(
         public array $data,
-    ) {}
+    ) {
+        $this->queue = 'notifications';
+    }
 
     public function handle(RabbitMQService $rabbitMq): void
     {

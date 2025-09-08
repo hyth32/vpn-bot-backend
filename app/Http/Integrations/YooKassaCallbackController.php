@@ -43,12 +43,11 @@ class YooKassaCallbackController
         $expirationDate = $this->periodRepository->getExpirationDateString($order->period_id);
 
         Bus::chain([
-            (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto))
-                ->onQueue('wireguard'),
+            (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto)),
             (new SendOrderStatusMessage([
                 'success' => true,
                 'telegram_id' => $telegramId,
-            ]))->onQueue('notifications'),
+            ])),
         ])->dispatch();
     }
 }

@@ -20,7 +20,9 @@ class CreateWireGuardPeer implements ShouldQueue
         public int $orderId,
         public string $expirationDate,
         public KeyOrderDTO $dto,
-    ) {}
+    ) {
+        $this->queue = 'wireguard';
+    }
 
     public function handle(
         WireGuardService $wireGuardService,
