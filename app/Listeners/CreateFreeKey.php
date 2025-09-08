@@ -22,10 +22,12 @@ class CreateFreeKey
 
         $telegramId = $keyOrderDto->getTelegramId();
 
+        $this->userRepository->markFreeKeyUsed($telegramId);
+
         Bus::chain([
             (new CreateWireGuardPeer($orderId, $expirationDate, $keyOrderDto)),
 
-            fn () => $this->userRepository->markFreeKeyUsed($telegramId),
+            // fn () => $this->userRepository->markFreeKeyUsed($telegramId),
             
             (new SendOrderStatusMessage([
                 'success' => 'true',
