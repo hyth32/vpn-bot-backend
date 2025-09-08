@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Events\FreeKeyUsed;
 use App\Http\DTOs\KeyOrderDTO;
 use App\Http\DTOs\KeyResponseDTO;
 use App\Http\DTOs\YooKassa\BankCardPaymentDTO;
@@ -83,6 +84,26 @@ class KeyService
             amount: $amount,
             payment_link: $paymentResponse->getPaymentUrl(),
         );
+    }
+
+    public function getFreeKey(KeyOrderDTO $dto): void
+    {
+        $userId = $this->userRepository->getIdFromTelegramId($dto->getTelegramId());
+
+        $order = Order::create([
+            'user_id' => $userId,
+            'amount' => 0,
+            'test' => false,
+            'paid' => true,
+            'region_id' => $dto->getRegionId(),
+            'period_id' => $dto->getPeriodId(),
+            'key_count' => $dto->getQuantity(),
+            'free' => true,
+        ]);
+
+        $expirationDateString = $this->periodRepository->getExpirationDateString($dto->getPeriodId());
+        
+        event(new FreeKeyUsed($order->id, $dto, $expirationDateString));
     }
 
     public function renewKey(int $keyId): KeyResponseDTO

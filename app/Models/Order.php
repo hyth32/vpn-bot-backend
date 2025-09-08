@@ -22,6 +22,7 @@ class Order extends Model
         'region_id',
         'period_id',
         'key_count',
+        'free',
     ];
 
     protected $casts = [

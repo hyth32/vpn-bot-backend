@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('external_id');
+            $table->string('external_id')->nullable();
             $table->integer('user_id')->nullable();
             $table->foreign('user_id')
                 ->references('id')
@@ -32,6 +32,7 @@ return new class extends Migration
                 ->on('periods')
                 ->nullOnDelete();
             $table->integer('key_count');
+            $table->boolean('free')->default(false);
 
             $table->softDeletes();
             $table->timestamps();

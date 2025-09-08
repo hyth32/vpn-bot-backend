@@ -27,8 +27,6 @@ class YooKassaCallbackController
 
         $dataObject = collect($data->get('object'));
 
-        $amountObject = collect($dataObject->get('amount'));
-
         $orderExternalId = $dataObject->get('id');
 
         $order = $this->orderRepository->setPaidStatus($orderExternalId);

@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Http\DTOs\KeyOrderDTO;
-use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Services\WireGuardService;

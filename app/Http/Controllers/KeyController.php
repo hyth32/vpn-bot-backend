@@ -7,6 +7,7 @@ use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Requests\DeleteKeyRequest;
+use App\Http\Requests\Key\FreeKeyRequest;
 use App\Http\Requests\Key\GetConfigRequest;
 use App\Http\Requests\Key\RenewKeyRequest;
 use App\Http\Requests\Key\ShowKeyRequest;
@@ -201,23 +202,19 @@ class KeyController extends Controller
      *     )
      * )
      */
-    // public function freeKey(FreeKeyRequest $request)
-    // {
-    //     $data = $request->validated();
-    //     $telegramId = $data['telegram_id'];
-    //     $regionId = $data['region_id'];
+    public function freeKey(FreeKeyRequest $request)
+    {
+        $data = $request->validated();
+        $telegramId = $data['telegram_id'];
+        $regionId = $data['region_id'];
 
-    //     if ($this->userRepository->hasUsedFreeKey($telegramId)) {
-    //         abort(403, 'Бесплатный ключ уже использован');
-    //     }
+        if ($this->userRepository->hasUsedFreeKey($telegramId)) {
+            abort(403, 'Бесплатный ключ уже использован');
+        }
 
-    //     $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
-    //     $config = $this->service->acceptPayment($dto)[0];
-
-    //     $this->userRepository->markFreeKeyUsed($telegramId);
-
-    //     return ['config' => $config];
-    // }
+        $dto = new KeyOrderDTO($telegramId, $regionId, 1, 1);
+        return $this->service->getFreeKey($dto);
+    }
 
     /**
      * @OA\Post(
