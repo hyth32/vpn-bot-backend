@@ -6,19 +6,19 @@ use Carbon\Carbon;
 
 class WireGuardConfigFormatter
 {
-    public function prepareConfig(array $baseConfig, string $configName, int $expirationDays): array
+    public function prepareConfig(array $baseConfig, string $configName, string $expirationDate): array
     {
         $config = $baseConfig;
         $config['DisplayName'] = $configName;
         $config['Filename'] = $configName;
-        $config['ExpiresAt'] = now()->addDays($expirationDays)->toDateString();
+        $config['ExpiresAt'] = $expirationDate;
 
         return $config;
     }
 
-    public function updateConfigExpiration(array $config, int $expirationDays): array
+    public function updateConfigExpiration(array $config, string $expirationDate): array
     {
-        $config['ExpiresAt'] = Carbon::parse($config['ExpiresAt'])->addDays($expirationDays);
+        $config['ExpiresAt'] = $expirationDate;
         return $config;
     }
 }

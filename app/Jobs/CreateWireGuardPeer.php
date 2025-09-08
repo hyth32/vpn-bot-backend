@@ -19,7 +19,7 @@ class CreateWireGuardPeer implements ShouldQueue
 
     public function __construct(
         public int $orderId,
-        public int $expirationDays,
+        public string $expirationDate,
         public KeyOrderDTO $dto,
     ) {}
 
@@ -35,7 +35,7 @@ class CreateWireGuardPeer implements ShouldQueue
         $configs = $wireGuardService->createPeers(
             $userName,
             $existingKeysCount,
-            $this->expirationDays,
+            $this->expirationDate,
             $this->dto->getQuantity(),
         );
 

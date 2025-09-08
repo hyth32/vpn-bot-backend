@@ -35,10 +35,10 @@ class WireGuardRepository
         return $baseConfigResponse->json();
     }
 
-    public function createConfig(string $configName, int $expirationDays): array
+    public function createConfig(string $configName, string $expirationDate): array
     {
         $baseConfig = $this->getBaseConfig();
-        $rawConfig = $this->formatter->prepareConfig($baseConfig, $configName, $expirationDays);
+        $rawConfig = $this->formatter->prepareConfig($baseConfig, $configName, $expirationDate);
 
         $syncConfigUrl = "$this->baseUrl/peer/new";
 
@@ -68,10 +68,10 @@ class WireGuardRepository
         return $responseConfig->json();
     }
 
-    public function renewConfig(string $configId, int $expirationDays)
+    public function renewConfig(string $configId, string $expirationDate)
     {
         $peerConfig = $this->findConfig($configId);
-        $updatedConfig = $this->formatter->updateConfigExpiration($peerConfig, $expirationDays);
+        $updatedConfig = $this->formatter->updateConfigExpiration($peerConfig, $expirationDate);
         
         $updateConfigUrl = "$this->baseUrl/peer/by-id/$configId";
         $response = Http::withBasicAuth($this->username, $this->password)

@@ -31,9 +31,6 @@ class YooKassaCallbackController
 
         $orderExternalId = $dataObject->get('id');
 
-        $amount = $amountObject->get('amount');
-        $currency = $amountObject->get('currency');
-
         $order = $this->orderRepository->setPaidStatus($orderExternalId);
 
         $telegramId = $this->userRepository->getTelegramId($order->user_id);
@@ -45,10 +42,10 @@ class YooKassaCallbackController
             quantity: $order->key_count,
         );
 
-        $expirationDays = $this->periodRepository->getExpirationDays($order->period_id);
+        $expirationDate = $this->periodRepository->getExpirationDateString($order->period_id);
 
         Bus::chain([
-            (new CreateWireGuardPeer($order->id, $expirationDays, $keyOrderDto))
+            (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto))
                 ->onQueue('wireguard'),
             (new SendOrderStatusMessage([
                 'success' => true,

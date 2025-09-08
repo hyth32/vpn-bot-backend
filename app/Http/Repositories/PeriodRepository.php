@@ -3,6 +3,7 @@
 namespace App\Http\Repositories;
 
 use App\Models\Period;
+use Carbon\Carbon;
 
 class PeriodRepository
 {
@@ -16,8 +17,10 @@ class PeriodRepository
         return Period::where('id', $id)->value('name');
     }
 
-    public function getExpirationDays(int $id): ?int
+    public function getExpirationDateString(int $id): string
     {
-        return Period::where('id', $id)->value('value');
+        $monthCount = Period::where('id', $id)->value('value');
+        $expirationDateTime = $monthCount == 0 ? now()->addDay() : now()->addMonths($monthCount);
+        return $expirationDateTime->toDateString();
     }
 }

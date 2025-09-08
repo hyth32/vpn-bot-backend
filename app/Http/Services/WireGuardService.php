@@ -12,22 +12,22 @@ class WireGuardService
         private KeyRepository $keyRepository,
     ) {}
 
-    public function createPeers(string $userName, int $existingCount, int $expirationDays, int $keysCount): array
+    public function createPeers(string $userName, int $existingCount, string $expirationDate, int $keysCount): array
     {
         $baseConfigName = $userName . '-';
         
         $configs = [];
         for ($i = 0; $i < $keysCount; $i++) {
             $configName = $baseConfigName . $existingCount + $i;
-            $configs[] = $this->createPeer($configName, $expirationDays);
+            $configs[] = $this->createPeer($configName, $expirationDate);
         }
 
         return $configs;
     }
 
-    public function createPeer(string $configName, int $expirationDays): array
+    public function createPeer(string $configName, string $expirationDate): array
     {
-        return $this->repository->createConfig($configName, $expirationDays);
+        return $this->repository->createConfig($configName, $expirationDate);
     }
     
     public function getPeer(string $configId): array
