@@ -29,6 +29,11 @@ class WireGuardService
     {
         return $this->repository->createConfig($configName, $expirationDate);
     }
+
+    public function updatePeer(string $configId, string $expirationDate)
+    {
+        return $this->repository->renewConfig($configId, $expirationDate);
+    }
     
     public function getPeer(string $configId): array
     {

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\FreeKeyUsed;
+use App\Http\Enums\OrderMessageAction;
 use App\Http\Repositories\UserRepository;
 use App\Jobs\CreateWireGuardPeer;
 use App\Jobs\SendOrderStatusMessage;
@@ -30,7 +31,7 @@ class CreateFreeKey
             (new SendOrderStatusMessage([
                 'success' => 'true',
                 'telegram_id' => $telegramId,
-                'free' => true,
+                'action' => OrderMessageAction::Free->value,
             ])),
         ])->dispatch();
     }

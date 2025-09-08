@@ -106,7 +106,7 @@ class KeyService
         event(new FreeKeyUsed($order->id, $dto, $expirationDateString));
     }
 
-    public function renewKey(int $keyId): KeyResponseDTO
+    public function renewKey(string $telegramId, int $keyId): KeyResponseDTO
     {
         $key = $this->repository->findOne($keyId);
         $regionName = $this->regionRepository->getName($key->region_id);
@@ -114,16 +114,31 @@ class KeyService
 
         $amount = $this->priceRepository->getPrice($key->region_id, $key->period_id);
 
-        $paymentLink = 'https://google.com';
+        $payment = new BankCardPaymentDTO($amount);
+        $paymentResponse = $this->yooKassaService->createPayment($payment);
 
-        // отправка запроса к wg на update
+        $userId = $this->userRepository->getIdFromTelegramId($telegramId);
+
+        Order::create([
+            'user_id' => $userId,
+            'external_id' => $paymentResponse->getExternalId(),
+            'amount' => $paymentResponse->getAmount(),
+            'test' => $paymentResponse->isTest(),
+            'paid' => $paymentResponse->isPaid(),
+            'metadata' => $paymentResponse->getMetadata(),
+            'region_id' => $key->region_id,
+            'period_id' => $key->period_id,
+            'key_count' => 1,
+            'renew' => true,
+            'renewed_key_id' => $keyId,
+        ]);
 
         return new KeyResponseDTO(
             region_name: $regionName,
             period_name: $periodName,
             quantity: 1,
             amount: $amount,
-            payment_link: $paymentLink,
+            payment_link: $paymentResponse->getPaymentUrl(),
         );
     }
 

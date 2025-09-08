@@ -83,7 +83,6 @@ class WireGuardRepository
             throw new ErrorException($decodedConfig['Message'], $decodedConfig['Code']);
         }
 
-        // менять expiration_date у модели ключа после выхода        
         return $response->status() == self::STATUS_SUCCESS;
     }
 

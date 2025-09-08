@@ -23,6 +23,8 @@ class Order extends Model
         'period_id',
         'key_count',
         'free',
+        'renew',
+        'key_id',
     ];
 
     protected $casts = [
@@ -47,5 +49,10 @@ class Order extends Model
     public function keys(): HasMany
     {
         return $this->hasMany(Key::class);
+    }
+
+    public function renewedKey(): BelongsTo
+    {
+        return $this->belongsTo(Key::class, 'renewed_key_id');
     }
 }

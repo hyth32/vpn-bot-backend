@@ -16,7 +16,6 @@ class RenewKeyRequest extends FormRequest
     {
         return [
             'telegram_id' => 'required|string|exists:users,telegram_id',
-            'key_id' => 'required|integer|exists:keys,id',
         ];
     }
 }

@@ -239,11 +239,11 @@ class KeyController extends Controller
      *     )
      * )
      */
-    public function renew(RenewKeyRequest $request)
+    public function renew(int $keyId, RenewKeyRequest $request)
     {
         $data = $request->validated();
         $telegramId = $data['telegram_id'];
-        $keyId = $data['key_id'];
+
         $this->checkAccess($telegramId, $keyId);
 
         $isExpired = $this->repository->isKeyExpired($keyId);
@@ -251,7 +251,7 @@ class KeyController extends Controller
             abort(400, 'Срок действия ключа еще не истек');
         }
 
-        return $this->service->renewKey($keyId);
+        return $this->service->renewKey($telegramId, $keyId);
     }
 
     /**

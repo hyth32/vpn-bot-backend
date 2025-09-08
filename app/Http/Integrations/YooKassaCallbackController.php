@@ -3,6 +3,7 @@
 namespace App\Http\Integrations;
 
 use App\Http\DTOs\KeyOrderDTO;
+use App\Http\Enums\OrderMessageAction;
 use App\Http\Repositories\OrderRepository;
 use App\Http\Repositories\PeriodRepository;
 use App\Http\Repositories\UserRepository;
@@ -10,6 +11,7 @@ use App\Http\Requests\YooKassa\YooKassaWebhookRequest;
 use App\Http\Services\WireGuardService;
 use App\Jobs\CreateWireGuardPeer;
 use App\Jobs\SendOrderStatusMessage;
+use App\Jobs\UpdateWireGuardPeer;
 use Illuminate\Support\Facades\Bus;
 
 class YooKassaCallbackController
@@ -43,10 +45,15 @@ class YooKassaCallbackController
         $expirationDate = $this->periodRepository->getExpirationDateString($order->period_id);
 
         Bus::chain([
-            (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto)),
+            $order->renew
+                ? (new UpdateWireGuardPeer($order->renew_key_id, $expirationDate))
+                : (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto)),
             (new SendOrderStatusMessage([
                 'success' => true,
                 'telegram_id' => $telegramId,
+                'action' => $order->renew
+                    ? OrderMessageAction::Renew->value
+                    : OrderMessageAction::Create->value,
             ])),
         ])->dispatch();
     }

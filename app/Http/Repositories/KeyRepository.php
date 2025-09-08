@@ -3,7 +3,6 @@
 namespace App\Http\Repositories;
 
 use App\Models\Key;
-use Illuminate\Database\Eloquent\Collection;
 
 class KeyRepository
 {
@@ -50,5 +49,10 @@ class KeyRepository
     {
         $expirationDate = Key::where('id', $keyId)->value('expiration_date');
         return $expirationDate <= now()->toDateTimeString();
+    }
+
+    public function setExpirationDate(int $id, string $expirationDate): void
+    {
+        Key::where('id', $id)->update(['expiration_date' => $expirationDate]);
     }
 }
