@@ -20,7 +20,7 @@ class PeriodRepository
     public function getExpirationDateString(int $id): string
     {
         $monthCount = Period::where('id', $id)->value('value');
-        $expirationDateTime = $monthCount == 0 ? now()->addDay() : now()->addMonths($monthCount);
+        $expirationDateTime = $monthCount == 0 ? now()->addDays(2) : now()->addMonths($monthCount);
         return $expirationDateTime->toDateString();
     }
 }
