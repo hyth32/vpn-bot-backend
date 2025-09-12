@@ -34,7 +34,13 @@ class KeyService
     public function listKeys(int $userId, int $offset, int $limit)
     {
         $userOrderIds = Order::where('user_id', $userId)->pluck('id');
-        return Key::whereIn('order_id', $userOrderIds)->offset($offset)->limit($limit)->get();
+        $keysQuery = Key::whereIn('order_id', $userOrderIds);
+        $totalCount = $keysQuery->count();
+        
+        return [
+            'total' => $totalCount,
+            'keys' => $keysQuery->offset($offset)->limit($limit)->get(),
+        ];
     }
 
     public function showKey(int $id): Key

@@ -71,8 +71,14 @@ class KeyController extends Controller
     {
         $data = $request->validated();
         $userId = $this->userRepository->getIdFromTelegramId($data['telegram_id']);
-        $keys = $this->service->listKeys($userId, $data['offset'], $data['limit']);
-        return KeyShortResource::collection($keys);
+        $response = $this->service->listKeys($userId, $data['offset'], $data['limit']);
+
+        return [
+            'data' => [
+                'total' => $response['total'],
+                'keys' => KeyShortResource::collection($response['keys']),
+            ]
+        ];
     }
 
     /**
