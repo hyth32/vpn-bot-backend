@@ -74,10 +74,8 @@ class KeyController extends Controller
         $response = $this->service->listKeys($userId, $data['offset'], $data['limit']);
 
         return [
-            'data' => [
-                'total' => $response['total'],
-                'keys' => KeyShortResource::collection($response['keys']),
-            ]
+            'total' => $response['total'],
+            'data' => KeyShortResource::collection($response['keys']),
         ];
     }
 
