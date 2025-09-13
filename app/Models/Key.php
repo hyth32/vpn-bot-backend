@@ -36,4 +36,9 @@ class Key extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function isExpired(): bool
+    {
+        return $this->expiration_date < now();
+    }
 }
