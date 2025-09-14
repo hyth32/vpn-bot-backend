@@ -45,7 +45,13 @@ class KeyService
 
     public function showKey(int $id): Key
     {
-        return $this->repository->findOne($id);
+        $configId = $this->repository->getConfigId($id);
+        $expirationDate = $this->wireGuardService->getPeerExpirationDate($configId);
+
+        $key = $this->repository->findOne($id);
+        $key->update(['expiration_date' => $expirationDate]);
+
+        return $key->refresh();
     }
 
     public function getConfig(int $keyId): string

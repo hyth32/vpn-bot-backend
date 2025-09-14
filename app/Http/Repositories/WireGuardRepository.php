@@ -68,6 +68,20 @@ class WireGuardRepository
         return $responseConfig->json();
     }
 
+    public function getPeerMetrics(string $configId)
+    {
+        $configId = rawurlencode($configId);
+        $getPeerMetricsUrl = "$this->baseUrl/metrics/by-peer/$configId";
+        $response = Http::withBasicAuth($this->username, $this->password)->get($getPeerMetricsUrl);
+
+        $decodedResponse = $response->json();
+        if (isset($decodedResponse['Code']) && isset($decodedResponse['Message'])) {
+            throw new ErrorException($decodedResponse['Message'], $decodedResponse['Code']);
+        }
+
+        return $response->json();
+    }
+
     public function renewConfig(string $configId, string $expirationDate)
     {
         $peerConfig = $this->findConfig($configId);

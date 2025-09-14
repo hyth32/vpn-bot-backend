@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\KeyRepository;
 use App\Http\Repositories\WireGuardRepository;
+use Carbon\Carbon;
 
 class WireGuardService
 {
@@ -38,6 +39,18 @@ class WireGuardService
     public function getPeer(string $configId): array
     {
         return $this->repository->findConfig($configId);
+    }
+
+    public function getPeerExpirationDate(string $configId): string
+    {
+        $config = $this->repository->findConfig($configId);
+        return Carbon::parse($config['ExpiresAt'])->toDateTimeString();
+    }
+
+    public function getMetrics(string $configId): array
+    {
+        $metrics = $this->repository->getPeerMetrics($configId);
+        return $metrics;
     }
 
     public function removePeer(string $configId)

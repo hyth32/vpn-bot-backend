@@ -16,12 +16,14 @@ use App\Http\Requests\KeyOrderRequest;
 use App\Http\Resources\KeyResource;
 use App\Http\Resources\KeyShortResource;
 use App\Http\Services\KeyService;
+use App\Http\Services\WireGuardService;
 use Illuminate\Support\Facades\Response;
 
 class KeyController extends Controller
 {
     public function __construct(
         private KeyService $service,
+        private WireGuardService $wireGuardService,
         private UserRepository $userRepository,
         private KeyRepository $repository,
         private OrderRepository $orderRepository,
@@ -111,7 +113,8 @@ class KeyController extends Controller
         $this->checkAccess($telegramId, $keyId);
 
         $key = $this->service->showKey($keyId);
-        return KeyResource::make($key);
+        $metrics = $this->wireGuardService->getMetrics($key->config_id);
+        return new KeyResource($key, $metrics);
     }
 
     /**
