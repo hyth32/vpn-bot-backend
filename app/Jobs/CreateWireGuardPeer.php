@@ -29,12 +29,14 @@ class CreateWireGuardPeer implements ShouldQueue
         UserRepository $userRepository,
         OrderRepository $orderRepository,
     ): void {
-        $userId = $userRepository->getIdFromTelegramId($this->dto->getTelegramId());
-        $userName = $userRepository->getNameFromTelegramId($this->dto->getTelegramId());
+        $telegramId = $this->dto->getTelegramId();
+        $userId = $userRepository->getIdFromTelegramId($telegramId);
+        $userName = $userRepository->getNameFromTelegramId($telegramId);
+        $userUsername = $userRepository->getUsernameFromTelegramId($telegramId);
         $existingKeysCount = $orderRepository->countKeysByUserId($userId);
 
         $configs = $wireGuardService->createPeers(
-            $userName,
+            $userUsername ?? $userName ?? $telegramId,
             $existingKeysCount,
             $this->expirationDate,
             $this->dto->getQuantity(),

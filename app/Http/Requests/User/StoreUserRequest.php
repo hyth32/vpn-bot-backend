@@ -9,8 +9,9 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'telegram_id' => 'required|string',
+            'username' => 'nullable|string',
         ];
     }
 }

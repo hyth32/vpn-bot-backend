@@ -31,6 +31,11 @@ class UserRepository
         return $this->getColumnByTelegramId($telegramId, 'name');
     }
 
+    public function getUsernameFromTelegramId(string $telegramId): ?string
+    {
+        return $this->getColumnByTelegramId($telegramId, 'username');
+    }
+
     public function hasUsedFreeKey(string $telegramId): bool
     {
         return $this->getColumnByTelegramId($telegramId, 'free_key_used');

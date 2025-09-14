@@ -14,15 +14,17 @@ namespace App\Http\DTOs;
 class StoreUserDto extends BaseDTO
 {
     public function __construct(
-        public string $name,
+        public ?string $name,
         public string $telegram_id,
+        public ?string $username,
     ) {}
 
     public static function fromRequest(array $data): self
     {
         return new self(
-            name: $data['name'],
+            name: $data['name'] ?? null,
             telegram_id: $data['telegram_id'],
+            username: $data['username'] ?? null,
         );
     }
 
