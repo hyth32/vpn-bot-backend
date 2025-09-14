@@ -32,4 +32,9 @@ class StoreUserDto extends BaseDTO
         $data['last_active_at'] = now();
         return $data;
     }
+
+    public function getTelegramId(): string
+    {
+        return $this->telegram_id;
+    }
 }
