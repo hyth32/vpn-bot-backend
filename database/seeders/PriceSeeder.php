@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Period;
 use App\Models\Price;
 use Illuminate\Database\Seeder;
 
@@ -10,57 +9,27 @@ class PriceSeeder extends Seeder
 {
     public function run(): void
     {
-        $periods = Period::query();
+        $amounts = [
+            1 => [1 => 0], // periodId => keys + price // free
+            2 => [1 => 120, 2 => 160, 3 => 220, 4 => 310, 5 => 390], // monthly
+            3 => [1 => 320, 2 => 440, 3 => 590, 4 => 840, 5 => 1040], // quarterly
+            4 => [1 => 610, 2 => 820, 3 => 1120, 4 => 1580, 5 => 1990], // semmianual
+            5 => [1 => 1160, 2 => 1540, 3 => 2120, 4 => 2980, 5 => 3820], // yearly
+        ];
 
-        Price::updateOrCreate(
-            ['region_id' => 1, 'period_id' => 1, 'key_count' => 1],
-            ['amount' => 0],
-        );
-
-        $periods->cursor()->each(function (Period $period) {
-            for ($i = 1; $i < 6; $i++) {
-                if ($period->id == 1) {
-                    continue;
-                }
-
+        foreach ($amounts as $periodId => $keysData) {
+            foreach ($keysData as $keyCount => $amount) {
                 Price::updateOrCreate(
-                    ['region_id' => 1, 'period_id' => $period->id, 'key_count' => $i],
-                    ['amount' => $this->calculatePrice($i, $period->value)],
+                    [
+                        'region_id' => 1,
+                        'period_id' => $periodId,
+                        'key_count' => $keyCount,
+                    ],
+                    [
+                        'amount' => $amount,
+                    ]
                 );
             }
-        });
-    }
-
-    private function calculatePrice(int $deviceCount, int $monthCount)
-    {
-        $basePrice = 100;
-
-        $deviceDiscount = [
-            1 => 0,
-            2 => 70,
-            3 => 110,
-            4 => 120,
-            5 => 140,
-        ];
-
-        $durationDiscount = [
-            1 => 0,
-            3 => 0.05,
-            6 => 0.10,
-            12 => 0.20,
-        ];
-
-        $price = ($deviceCount * $basePrice - ($deviceDiscount[$deviceCount] ?? 0))
-            * $monthCount * (1 - ($durationDiscount[$monthCount] ?? 0));
-
-        return $this->roundToNice($price);
-    }
-
-    private function roundToNice(float $number)
-    {
-        if ($number < 1000) {
-            return round($number / 10) * 10;
         }
-        return round($number / 50) * 50;
     }
 }
