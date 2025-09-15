@@ -23,6 +23,7 @@ class KeyResource extends JsonResource
             'region_name' => $this->order->region->name,
             'expiration_date' => $this->expiration_date,
             'expired' => $this->isExpired(),
+            'free' => (bool) $this->order->free,
         ];
 
         if ($this->metrics) {
