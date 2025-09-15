@@ -253,7 +253,8 @@ class KeyController extends Controller
 
         $this->checkAccess($telegramId, $keyId);
 
-        return $this->service->renewKey($telegramId, $keyId);
+        $response = $this->service->renewKey($telegramId, $keyId);
+        return $response->toArray();
     }
 
     /**
