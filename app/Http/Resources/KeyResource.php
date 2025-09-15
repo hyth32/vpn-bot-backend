@@ -27,7 +27,7 @@ class KeyResource extends JsonResource
         ];
 
         if ($this->metrics) {
-            $keyData['usage'] = $this->metrics['BytesTransmitted'];
+            $keyData['usage'] = $this->metrics['BytesTransmitted'] ?? 0;
         }
         
         return $keyData;

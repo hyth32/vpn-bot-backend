@@ -49,8 +49,12 @@ class WireGuardService
 
     public function getMetrics(string $configId): array
     {
-        $metrics = $this->repository->getPeerMetrics($configId);
-        return $metrics;
+        try {
+            $metrics = $this->repository->getPeerMetrics($configId);
+            return $metrics;
+        } catch (\ErrorException $e) {
+            return [];
+        }
     }
 
     public function removePeer(string $configId)
