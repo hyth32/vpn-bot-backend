@@ -89,7 +89,7 @@ class WireGuardRepository
         
         $updateConfigUrl = "$this->baseUrl/peer/by-id/$configId";
         $response = Http::withBasicAuth($this->username, $this->password)
-            ->withBody($updatedConfig)
+            ->withBody(json_encode($updatedConfig))
             ->put($updateConfigUrl);
 
         $decodedConfig = $response->json();
