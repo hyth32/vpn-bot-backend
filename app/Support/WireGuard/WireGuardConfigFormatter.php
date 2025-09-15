@@ -16,9 +16,13 @@ class WireGuardConfigFormatter
         return $config;
     }
 
-    public function updateConfigExpiration(array $config, string $expirationDate): array
+    public function updateConfigExpiration(array $config, int $monthsToAdd): array
     {
-        $config['ExpiresAt'] = $expirationDate;
+        $currentExpiration = Carbon::parse($config['ExpiresAt']);
+        
+        $newExpiration = $currentExpiration->addMonths($monthsToAdd);
+        
+        $config['ExpiresAt'] = $newExpiration->toDateString();
         return $config;
     }
 }

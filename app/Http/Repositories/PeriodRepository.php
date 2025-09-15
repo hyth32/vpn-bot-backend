@@ -22,4 +22,9 @@ class PeriodRepository
         $expirationDateTime = $monthCount == 0 ? now()->addDays(2) : now()->addMonths($monthCount);
         return $expirationDateTime->toDateString();
     }
+
+    public function getPeriodValue(int $id): int
+    {
+        return Period::where('id', $id)->value('value');
+    }
 }

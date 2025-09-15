@@ -82,10 +82,10 @@ class WireGuardRepository
         return $response->json();
     }
 
-    public function renewConfig(string $configId, string $expirationDate)
+    public function renewConfig(string $configId, int $monthsToAdd)
     {
         $peerConfig = $this->findConfig($configId);
-        $updatedConfig = $this->formatter->updateConfigExpiration($peerConfig, $expirationDate);
+        $updatedConfig = $this->formatter->updateConfigExpiration($peerConfig, $monthsToAdd);
         
         $updateConfigUrl = "$this->baseUrl/peer/by-id/$configId";
         $response = Http::withBasicAuth($this->username, $this->password)

@@ -13,7 +13,7 @@ class UpdateWireGuardPeer implements ShouldQueue
 
     public function __construct(
         public int $keyId,
-        public string $expirationDate,
+        public int $monthsToAdd,
     ) {
         $this->queue = 'wireguard';
     }
@@ -23,10 +23,11 @@ class UpdateWireGuardPeer implements ShouldQueue
         KeyRepository $keyRepository,
     ): void {
         $configId = $keyRepository->getConfigId($this->keyId);
-        $updated = $wireGuardService->updatePeer($configId, $this->expirationDate);
+        $updated = $wireGuardService->updatePeer($configId, $this->monthsToAdd);
     
         if ($updated) {
-            $keyRepository->setExpirationDate($this->keyId, $this->expirationDate);
+            $updatedPeer = $wireGuardService->getPeer($configId);
+            $keyRepository->setExpirationDate($this->keyId, $updatedPeer['ExpiresAt']);
         }
     }
 }

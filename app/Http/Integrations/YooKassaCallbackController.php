@@ -43,10 +43,11 @@ class YooKassaCallbackController
         );
 
         $expirationDate = $this->periodRepository->getExpirationDateString($order->period_id);
+        $monthsToAdd = $this->periodRepository->getPeriodValue($order->period_id);
 
         Bus::chain([
             $order->renew
-                ? (new UpdateWireGuardPeer($order->renewed_key_id, $expirationDate))
+                ? (new UpdateWireGuardPeer($order->renewed_key_id, $monthsToAdd))
                 : (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto)),
             (new SendOrderStatusMessage([
                 'success' => true,
