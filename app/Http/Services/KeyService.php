@@ -121,10 +121,14 @@ class KeyService
     public function renewKey(string $telegramId, int $keyId): KeyResponseDTO
     {
         $key = $this->repository->findOne($keyId);
-        $regionName = $this->regionRepository->getName($key->region_id);
-        $periodName = $this->periodRepository->getName($key->period_id);
+        $order = $key->order;
+        $regionId = $order->region_id;
+        $periodId = $order->period_id;
 
-        $amount = $this->priceRepository->getPrice($key->region_id, $key->period_id);
+        $regionName = $this->regionRepository->getName($regionId);
+        $periodName = $this->periodRepository->getName($periodId);
+
+        $amount = $this->priceRepository->getPrice($regionId, $periodId);
 
         $payment = new BankCardPaymentDTO($amount);
         $paymentResponse = $this->yooKassaService->createPayment($payment);
@@ -138,8 +142,8 @@ class KeyService
             'test' => $paymentResponse->isTest(),
             'paid' => $paymentResponse->isPaid(),
             'metadata' => $paymentResponse->getMetadata(),
-            'region_id' => $key->region_id,
-            'period_id' => $key->period_id,
+            'region_id' => $regionId,
+            'period_id' => $periodId,
             'key_count' => 1,
             'renew' => true,
             'renewed_key_id' => $keyId,
