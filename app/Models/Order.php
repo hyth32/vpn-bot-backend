@@ -25,6 +25,7 @@ class Order extends Model
         'free',
         'renew',
         'key_id',
+        'renewed_key_id',
     ];
 
     protected $casts = [

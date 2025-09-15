@@ -46,7 +46,7 @@ class YooKassaCallbackController
 
         Bus::chain([
             $order->renew
-                ? (new UpdateWireGuardPeer($order->renew_key_id, $expirationDate))
+                ? (new UpdateWireGuardPeer($order->renewed_key_id, $expirationDate))
                 : (new CreateWireGuardPeer($order->id, $expirationDate, $keyOrderDto)),
             (new SendOrderStatusMessage([
                 'success' => true,
